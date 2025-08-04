@@ -12,7 +12,7 @@ export default function LandingPage() {
         <nav className="flex gap-8 text-sm text-[#222]">
           <a href="#dashboard" className="hover:underline">Dashboard</a>
           <a href="#artikel" className="hover:underline">Artikel</a>
-          <a href="#tanaman" className="hover:underline">asd Tanaman</a>
+          <a href="#tanaman" className="hover:underline">Jelajahi Tanaman</a>
         </nav>
         <div className="flex gap-2">
           <button className="px-6 py-1 rounded-full border border-[#3B5D2A] text-[#3B5D2A] bg-white hover:bg-[#F0F5ED]">Login</button>
