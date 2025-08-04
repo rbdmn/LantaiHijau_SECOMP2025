@@ -1,6 +1,16 @@
+"use client";
 import Image from "next/image";
+// Contoh di frontend/app/landing_page/page.tsx
+import { useEffect, useState } from "react";
 
 export default function LandingPage() {
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/hello")
+      .then((res) => res.json())
+      .then((data) => setMessage(data.message));
+  }, []);
   return (
     <div className="font-sans bg-[#F8F9F6]">
       {/* Header */}
@@ -34,6 +44,15 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Pesan dari Laravel API */}
+      {message && (
+        <div className="w-full flex justify-center mt-4">
+          <div className="bg-green-100 text-green-800 px-4 py-2 rounded shadow">
+            {message}
+          </div>
+        </div>
+      )}
 
       {/* Explore Section */}
       <section id="tanaman" className="w-full py-16 px-8 bg-white flex flex-col items-center">
