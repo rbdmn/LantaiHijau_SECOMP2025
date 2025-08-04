@@ -56,7 +56,7 @@ export default function LandingPage() {
           <Image src="/petani.svg" alt="Petani" width={200} height={200} className="rounded-xl" />
         </div>
         <div className="flex-1 max-w-xl">
-          <h2 className="text-[#3B5D2A] text-3xl font-bold mb-4">Tentang Kita</h2>
+          <h2 className="text-[#3B5D2A] text-3xl font-bold mb-4">Tentang Kita Semua</h2>
           <p className="text-[#222]">A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. I am alone, and feel the charm of existence in this spot, which was created for the bliss of souls like mine. I am so happy, my dear friend, so absorbed in the exquisite sense of mere tranquil existence, that I neglect my talents.</p>
         </div>
       </section>
