@@ -4,8 +4,6 @@ import Image from "next/image";
 import { FaArrowLeft } from "react-icons/fa";
 import NavbarUtama from "../../../components/navigation/navbar_utama";
 import Sidebar from "../../../components/navigation/sidebar";
-import NavbarUtama from "../../../components/navigation/navbar_utama";
-import Sidebar from "../../../components/navigation/sidebar";
 
 const GRID_ROWS = 16;
 const GRID_COLS = 20;
