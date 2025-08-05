@@ -15,7 +15,7 @@ const articles = [
   {
     id: '2',
     title: 'Pemuda ini Sukses Tanam Sawi di Rumah',
-    date: 'Monday 31 August 2021',
+    date: 'Monday 17 August 2022',
     image: '/sawi.jpg',
     excerpt:
       'Mauris egestas turpis. Vitae pulvinar lobortis vel ut at. Sed facilisis vestibulum...',
@@ -23,7 +23,7 @@ const articles = [
   {
     id: '3',
     title: 'Tips Merawat Tanaman Bawang di Rumah',
-    date: 'Monday 31 August 2021',
+    date: 'Monday 18 August 2021',
     image: '/bawang.jpg',
     excerpt:
       'Mauris egestas turpis. Vitae pulvinar lobortis vel ut at. Sed facilisis vestibulum...',
