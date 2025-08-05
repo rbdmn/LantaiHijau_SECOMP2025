@@ -163,12 +163,6 @@ function KebunVirtualPage() {
 
         {/* Konten Utama */}
         <div className="flex-1 ml-[96px] mt-15"> {/* Sesuaikan offset sesuai lebar sidebar (w-24 = 96px) */}
-          {/* Title */}
-          <div className="px-8 pt-8 mt-[60px]">
-            <h1 className="text-[#3B5D2A] text-5xl font-bold mb-6" style={{ fontFamily: "inherit" }}>
-              Kebun Virtual
-            </h1>
-          </div>
           <div className="min-h-screen bg-white p-6 flex flex-col gap-4">
             {/* Header */}
             <div className="flex items-center gap-4 mb-2">
