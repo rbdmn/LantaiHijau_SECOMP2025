@@ -81,11 +81,10 @@ export default function HasilPanenPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9F6] font-sans">
+    <div className="min-h-screen bg-[#F8F9F6] font-sans pl-5">
+      <Sidebar/>
       <NavbarUtama />
       <div className="flex">
-        {/* Sidebar */}
-        <Sidebar />
 
         {/* Konten Utama */}
         <div className="flex-1 ml-[96px]"> {/* Sesuaikan offset sesuai lebar sidebar (w-24 = 96px) */}
@@ -98,13 +97,13 @@ export default function HasilPanenPage() {
           <div className="flex flex-col md:flex-row gap-8 px-8">
             {/* Left: Card List */}
             <div className="flex-1 flex flex-col gap-4">
-              <div className="flex items-center gap-2 mb-2 justify-end">
+              <div className="flex items-center gap-5 mb-2 justify-end">
                 <button onClick={handleFilter} className="bg-[#4B6A3D] text-white px-6 py-1 rounded-md font-semibold text-base hover:bg-[#3B5D2A] transition">Filter</button>
                 <label className="flex items-center gap-1 text-[#222] text-base">
                   <input type="checkbox" checked={selected.length === panen.length && panen.length > 0} onChange={handleSelectAll} className="accent-[#3B5D2A]" />
                   Pilih Semua
                 </label>
-                <button onClick={handleDeleteSelected} className="bg-[#3B5D2A] text-white px-4 py-1 rounded-md font-semibold text-base hover:bg-red-700 transition">Hapus</button>
+                <button onClick={handleDeleteSelected} className="bg-[#FF0000] text-white px-4 py-1 rounded-md font-semibold text-base hover:bg-red-700 transition">Hapus</button>
               </div>
               <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto pr-2">
                 {panen.map((item) => (
@@ -169,16 +168,16 @@ export default function HasilPanenPage() {
           {/* Table Panen + Button group penghematan (terpisah) */}
           <div className="px-8 mt-8 flex flex-col gap-4">
             {/* Button group penghematan, right aligned */}
-            <div className="flex items-center justify-end gap-2 mb-2">
+            <div className="flex items-center justify-end gap-5 mb-2">
               <button onClick={handleFilter} className="bg-[#4B6A3D] text-white px-6 py-1 rounded-md font-semibold text-base hover:bg-[#3B5D2A] transition">Filter</button>
               <label className="flex items-center gap-1 text-[#222] text-base">
                 <input type="checkbox" checked={selectedPenghematan.length === penghematanList.length && penghematanList.length > 0} onChange={handleSelectAllPenghematan} className="accent-[#3B5D2A]" />
                 Pilih Semua
               </label>
-              <button onClick={handleDeleteSelectedPenghematan} className="bg-[#3B5D2A] text-white px-4 py-1 rounded-md font-semibold text-base hover:bg-red-700 transition">Hapus</button>
+              <button onClick={handleDeleteSelectedPenghematan} className="bg-[#FF0000] text-white px-4 py-1 rounded-md font-semibold text-base hover:bg-red-700 transition">Hapus</button>
             </div>
             {penghematanList.map((item, idx) => (
-              <div key={item.id} className="bg-white border border-[#B7C9A6] rounded-xl shadow p-4" style={{ boxShadow: '2px 2px 4px #b7c9a6' }}>
+              <div key={item.id} className="bg-white border border-[#B7C9A6] rounded-xl shadow p-4 mb-4" style={{ boxShadow: '2px 2px 4px #b7c9a6' }}>
                 <div className="overflow-x-auto">
                   <table className="w-full text-center text-[#222] border border-[#B7C9A6]">
                     <thead className="bg-[#F8F9F6]">
@@ -208,7 +207,12 @@ export default function HasilPanenPage() {
                         <td className="py-2 px-2 border-r border-[#B7C9A6] font-semibold align-middle">Rp. 19.000</td>
                         <td className="py-2 px-2 border-r border-[#B7C9A6] font-semibold align-middle">Rp. 30.000/Kg</td>
                         <td className="py-2 px-2 font-semibold align-middle">
-                          <button onClick={() => handleDeletePenghematan(item.id)} className="text-[#3B5D2A] hover:text-red-700 font-semibold px-2 py-1 rounded transition">Hapus</button>
+                          <button
+                              onClick={() => handleDeletePenghematan(item.id)}
+                              className="bg-red-600 text-white hover:bg-red-700 font-semibold px-2 py-1 rounded transition"
+                            >
+                              Hapus
+                            </button>
                         </td>
                       </tr>
                     </tbody>

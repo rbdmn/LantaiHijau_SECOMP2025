@@ -32,17 +32,18 @@ export default function NavbarUtama() {
               Dashboard
             </Link>
             <Link 
-              href="/artikel" 
-              className="text-gray-700 hover:text-[#5C7D5B] transition-colors duration-200"
-            >
-              Artikel
-            </Link>
-            <Link 
               href="/jelajahi_tanaman" 
               className="text-gray-700 hover:text-[#5C7D5B] transition-colors duration-200"
             >
               Jelajahi Tanaman
             </Link>
+            <Link 
+              href="/artikel" 
+              className="text-gray-700 hover:text-[#5C7D5B] transition-colors duration-200"
+            >
+              Artikel
+            </Link>
+            
           </div>
 
           {/* Desktop Buttons */}
