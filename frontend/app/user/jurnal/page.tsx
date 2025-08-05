@@ -76,14 +76,13 @@ export default function JurnalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9F6] font-sans pl-30">
-      <Sidebar />
+    <div className="min-h-screen bg-[#F8F9F6] font-sans">
        <NavbarUtama />
       
 
       {/* Title */}
       <div className="px-8 pt-8 mt-[60px]">
-        <h1 className="text-[#3B5D2A] text-3xl font-bold mb-6" style={{fontFamily:'inherit'}}>Jurnal</h1>
+        <h1 className="text-[#3B5D2A] text-5xl font-bold mb-6" style={{fontFamily:'inherit'}}>Jurnal</h1>
       </div>
 
       {/* Update & Add Bar */}
