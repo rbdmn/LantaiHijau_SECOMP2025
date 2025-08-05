@@ -9,9 +9,9 @@ export default function Sidebar() {
 
   const menu = [
     { href: "/user/dashboard", label: "Dashboard", icon: <FaHome size={24} /> },
-    { href: "/user/kebun", label: "Kebun Virtual", icon: <FaSeedling size={24} /> },
+    { href: "/user/kebun_virtual", label: "Kebun Virtual", icon: <FaSeedling size={24} /> },
     { href: "/user/jurnal", label: "Jurnal", icon: <FaBook size={24} /> },
-    { href: "/user/hasil-panen", label: "Hasil Panen", icon: <FaDollarSign size={24} /> },
+    { href: "/user/hasil_panen", label: "Hasil Panen", icon: <FaDollarSign size={24} /> },
   ];
 
   return (
