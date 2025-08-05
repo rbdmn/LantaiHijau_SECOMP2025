@@ -44,6 +44,7 @@ export default function LandingPage() {
     <main className="bg-white min-h-screen font-sans">
       <NavbarUtama />
       
+      
       {/* Hero Carousel Section */}
       <section className="w-full h-[600px] flex items-center justify-center px-6 md:px-20 bg-gradient-to-t from-[#304529] to-[#557C49] relative mt-16 overflow-hidden">
         <div className="max-w-6xl flex flex-col md:flex-row items-center justify-center gap-30 z-10 text-center md:text-left">

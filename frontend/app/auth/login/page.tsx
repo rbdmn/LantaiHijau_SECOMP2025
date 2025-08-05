@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import NavbarUtama from "../../../components/navigation/navbar_utama";
 import { FaRegUserCircle } from "react-icons/fa";
-
+import { MdOutlineEmail,MdLockOutline } from "react-icons/md";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 
 export default function LoginPage() {
@@ -13,6 +13,8 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +39,8 @@ export default function LoginPage() {
           <FaRegUserCircle className="text-[#3C4F3A] text-6xl mx-auto mt-5 mb-5" />
 
           <form onSubmit={handleSubmit} className="space-y-6 text-left">
-            <div>
+            <div className="relative">
+              <MdOutlineEmail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
               <input
                 type="email"
                 id="email"
@@ -45,29 +48,38 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5C7D5B] focus:border-transparent transition-colors"
-                placeholder="Masukkan email Anda"
+                className="w-full pl-10 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#5C7D5B] focus:border-transparent transition-colors"
+                placeholder="Email"
               />
             </div>
 
-            <div>
+            <div className="relative">
+              <MdLockOutline className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
+              
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5C7D5B] focus:border-transparent transition-colors"
-                placeholder="Masukkan password Anda"
+                className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#5C7D5B] focus:border-transparent transition-colors"
+                placeholder="Password"
               />
+
+              <div
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FiEyeOff className="text-xl" /> : <FiEye className="text-xl" />}
+              </div>
             </div>
 
             <button
               type="submit"
               className="w-full bg-[#5C7D5B] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#4A6B4A] transition-colors duration-200"
             >
-              Submit
+              Login
             </button>
           </form>
 
