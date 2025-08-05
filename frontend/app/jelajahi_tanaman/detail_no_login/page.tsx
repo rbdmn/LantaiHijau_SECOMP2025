@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
+import NavbarUtama from "../../../components/navigation/navbar_utama";
 
 export default function DetailNoLogin() {
   const [showGuide, setShowGuide] = useState(false);
@@ -37,27 +38,12 @@ export default function DetailNoLogin() {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      {/* Header */}
-      <header className="w-full bg-white flex items-center justify-between px-8 py-4 shadow-sm">
-        <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="Lantai Hijau Logo" width={32} height={32} />
-          <span className="text-[#3B5D2A] font-bold text-lg">Lantai Hijau</span>
-        </div>
-        <nav className="flex gap-8 text-sm text-[#222]">
-          <a href="#dashboard" className="hover:underline">Dashboard</a>
-          <a href="#artikel" className="hover:underline">Artikel</a>
-          <a href="#tanaman" className="hover:underline">Jelajahi Tanaman</a>
-        </nav>
-        <div className="flex gap-2 items-center">
-          <button className="w-10 h-10 flex items-center justify-center rounded-full border border-[#3B5D2A] text-[#3B5D2A] bg-white hover:bg-[#F0F5ED]" aria-label="Logout">
-            <svg width="22" height="22" fill="none" stroke="#3B5D2A" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="8" r="4"/><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/></svg>
-          </button>
-        </div>
-      </header>
+      <NavbarUtama />
+    
 
       {/* Back Arrow */}
       <div className="px-8 pt-6">
-        <button onClick={() => window.history.back()} className="text-[#3B5D2A] text-3xl font-bold rounded-full hover:bg-[#F0F5ED] w-10 h-10 flex items-center justify-center">
+        <button onClick={() => window.history.back()} className="text-[#3B5D2A] text-3xl font-bold rounded-full hover:bg-[#F0F5ED] w-10 h-10 flex items-center justify-center mt-[60px]">
           <svg width="28" height="28" fill="none" stroke="#3B5D2A" strokeWidth="3" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
         </button>
       </div>

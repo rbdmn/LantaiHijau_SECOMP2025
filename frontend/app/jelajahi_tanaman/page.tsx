@@ -2,6 +2,7 @@
 "use client";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import NavbarUtama from "../../components/navigation/navbar_utama";
 
 const tanamanList = [
   { id: 1, name: "Tanaman Cabai", price: 15000, img: "/cabai.svg" },
@@ -58,32 +59,13 @@ export default function JelajahiTanamanPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9F6] font-sans">
-      {/* Header */}
-      <header className="w-full bg-white flex items-center justify-between px-8 py-4 shadow-sm">
-        <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="Lantai Hijau Logo" width={32} height={32} />
-          <span className="text-[#3B5D2A] font-bold text-lg">Lantai Hijau</span>
-        </div>
-        <nav className="flex gap-8 text-sm text-[#222]">
-          <a href="#dashboard" className="hover:underline">Dashboard</a>
-          <a href="#artikel" className="hover:underline">Artikel</a>
-          <a href="#tanaman" className="hover:underline">Jelajahi Tanaman</a>
-        </nav>
-        <div className="flex gap-2 items-center">
-          <button
-            className="w-10 h-10 flex items-center justify-center rounded-full border border-[#3B5D2A] text-[#3B5D2A] bg-white hover:bg-[#F0F5ED]"
-            aria-label="Logout"
-            onClick={handleLogout}
-          >
-            <svg width="22" height="22" fill="none" stroke="#3B5D2A" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="8" r="4"/><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/></svg>
-          </button>
-        </div>
-      </header>
+      <NavbarUtama />
 
       {/* Hero Title */}
-      <div className="w-full bg-gradient-to-b from-[#6B8F5A] to-[#3B5D2A] py-12 flex flex-col items-center">
+      <div className="w-full bg-gradient-to-b from-[#6B8F5A] to-[#3B5D2A] py-12 flex flex-col items-center mt-[60px]">
         <h1 className="text-white text-5xl font-bold">Jelajahi Tanaman Pangan</h1>
       </div>
+
 
       {/* Main Content */}
       <div className="flex flex-col md:flex-row gap-8 px-6 md:px-16 py-8">
