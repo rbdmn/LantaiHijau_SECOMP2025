@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import { FaArrowLeft } from "react-icons/fa";
+import NavbarUtama from "../../../components/navigation/navbar_utama";
+import Sidebar from "../../../components/navigation/sidebar";
 
 const GRID_ROWS = 16;
 const GRID_COLS = 20;
@@ -151,13 +154,18 @@ const [selectedColor, setSelectedColor] = useState<string>("");
   }
 
   return (
-    <div className="min-h-screen bg-white p-6 flex flex-col gap-4">
+    <div className="min-h-screen bg-white p-6 flex flex-col gap-4 pl-30 pt-20">
+      <Sidebar />
+      <NavbarUtama />
       {/* Header */}
       <div className="flex items-center gap-4 mb-2">
-        <button className="text-2xl text-[#3B5D2A] font-bold">←</button>
-        <h1 className="text-2xl font-bold text-[#222]">My Garden</h1>
+        <a href="/user/dashboard" className="text-2xl text-[#3B5D2A] font-bold">
+          <FaArrowLeft />
+        </a>
+
+        <h1 className="text-3xl font-bold text-[#304529]">My Garden</h1>
         <div className="flex-1" />
-        <button className="bg-[#FF4B4B] text-white px-4 py-1 rounded-full text-xs font-semibold">Hapus Kebun</button>
+        <button className="bg-[#FF0000] text-white px-4 py-1 text-xs font-semibold">Hapus Kebun</button>
       </div>
       <div className="flex gap-4 mb-4">
         

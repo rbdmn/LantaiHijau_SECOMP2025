@@ -62,8 +62,10 @@ export default function JelajahiTanamanPage() {
       <NavbarUtama />
 
       {/* Hero Title */}
-      <div className="w-full bg-gradient-to-b from-[#6B8F5A] to-[#3B5D2A] py-12 flex flex-col items-center mt-[60px]">
-        <h1 className="text-white text-5xl font-bold">Jelajahi Tanaman Pangan</h1>
+      <div className="w-full bg-gradient-to-b from-[#6B8F5A] to-[#3B5D2A] py-20 mt-[64px] flex flex-col items-center">
+        <h1 className="text-white text-5xl font-bold text-center">
+        Jelajahi Tanaman Pangan
+        </h1>
       </div>
 
 

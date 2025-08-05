@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import NavbarUtama from "../../../components/navigation/navbar_utama";
+import Sidebar from "../../../components/navigation/sidebar";
 
 const initialPanen = [
   { id: 1, nama: "Cabai", tanggal: "18/12/2025", img: "/cabai.svg", kuantitas: "2090 gram", hargaTanam: 19000, hargaPasar: 30000, penghematan: 43700 },
@@ -80,25 +81,26 @@ export default function HasilPanenPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9F6] font-sans">
+    <div className="min-h-screen bg-[#F8F9F6] font-sans pl-30">
+      <Sidebar/>
       <NavbarUtama />
 
       {/* Main Content */}
       <div className="px-8 pt-8 mt-[60px]">
-        <h1 className="text-[#3B5D2A] text-5xl font-bold mb-6" style={{ fontFamily: 'inherit' }}>
+        <h1 className="text-[#3B5D2A] text-3xl font-bold mb-6" style={{ fontFamily: 'inherit' }}>
           Hasil Panen
         </h1>
       </div>
       <div className="flex flex-col md:flex-row gap-8 px-8">
         {/* Left: Card List */}
       <div className="flex-1 flex flex-col gap-4">
-        <div className="flex items-center gap-2 mb-2 justify-end">
+        <div className="flex items-center gap-6 mb-2 justify-end">
           <button onClick={handleFilter} className="bg-[#4B6A3D] text-white px-6 py-1 rounded-md font-semibold text-base hover:bg-[#3B5D2A] transition">Filter</button>
           <label className="flex items-center gap-1 text-[#222] text-base">
             <input type="checkbox" checked={selected.length === panen.length && panen.length > 0} onChange={handleSelectAll} className="accent-[#3B5D2A]" />
             Pilih Semua
           </label>
-          <button onClick={handleDeleteSelected} className="bg-[#3B5D2A] text-white px-4 py-1 rounded-md font-semibold text-base hover:bg-red-700 transition">Hapus</button>
+          <button onClick={handleDeleteSelected} className="bg-[#FF0000] text-white px-4 py-1 rounded-md font-semibold text-base hover:bg-red-700 transition">Hapus</button>
         </div>
         <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto pr-2">
           {panen.map((item) => (
@@ -163,16 +165,16 @@ export default function HasilPanenPage() {
       {/* Table Panen + Button group penghematan (terpisah) */}
       <div className="px-8 mt-8 flex flex-col gap-4">
         {/* Button group penghematan, right aligned */}
-        <div className="flex items-center justify-end gap-2 mb-2">
+        <div className="flex items-center justify-end gap-6 mb-2">
           <button onClick={handleFilter} className="bg-[#4B6A3D] text-white px-6 py-1 rounded-md font-semibold text-base hover:bg-[#3B5D2A] transition">Filter</button>
-          <label className="flex items-center gap-1 text-[#222] text-base">
+          <label className="flex items-center gap-2 text-[#222] text-base">
             <input type="checkbox" checked={selectedPenghematan.length === penghematanList.length && penghematanList.length > 0} onChange={handleSelectAllPenghematan} className="accent-[#3B5D2A]" />
             Pilih Semua
           </label>
-          <button onClick={handleDeleteSelectedPenghematan} className="bg-[#3B5D2A] text-white px-4 py-1 rounded-md font-semibold text-base hover:bg-red-700 transition">Hapus</button>
+          <button onClick={handleDeleteSelectedPenghematan} className="bg-[#FF0000] text-white px-4 py-1 rounded-md font-semibold text-base hover:bg-red-700 transition">Hapus</button>
         </div>
         {penghematanList.map((item, idx) => (
-          <div key={item.id} className="bg-white border border-[#B7C9A6] rounded-xl shadow p-4" style={{boxShadow:'2px 2px 4px #b7c9a6'}}>
+          <div key={item.id} className="bg-white border border-[#B7C9A6] rounded-xl shadow p-4 mb-6" style={{boxShadow:'2px 2px 4px #b7c9a6'}}>
             <div className="overflow-x-auto">
               <table className="w-full text-center text-[#222] border border-[#B7C9A6]">
                 <thead className="bg-[#F8F9F6]">

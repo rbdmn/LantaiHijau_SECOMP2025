@@ -2,13 +2,16 @@
 import Image from "next/image";
 import { useState } from "react";
 import NavbarUtama from "../../../components/navigation/navbar_utama";
+import Sidebar from "../../../components/navigation/sidebar";
 
 export default function DashboardPage() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ nama: "", panjang: "", lebar: "" });
 
   return (
-    <div className="min-h-screen bg-[#F8F9F6] flex flex-col">
+    <div className="min-h-screen bg-[#F8F9F6] flex flex-col pl-30">
+
+    <Sidebar/>
       {/* Navbar at the very top */}
       <NavbarUtama />
       

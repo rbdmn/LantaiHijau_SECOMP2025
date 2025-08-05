@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import NavbarUtama from "../../../components/navigation/navbar_utama";
+import Sidebar from "../../../components/navigation/sidebar";
 
 const initialJurnal = [
   {
@@ -75,13 +76,14 @@ export default function JurnalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9F6] font-sans">
+    <div className="min-h-screen bg-[#F8F9F6] font-sans pl-30">
+      <Sidebar />
        <NavbarUtama />
       
 
       {/* Title */}
       <div className="px-8 pt-8 mt-[60px]">
-        <h1 className="text-[#3B5D2A] text-5xl font-bold mb-6" style={{fontFamily:'inherit'}}>Jurnal</h1>
+        <h1 className="text-[#3B5D2A] text-3xl font-bold mb-6" style={{fontFamily:'inherit'}}>Jurnal</h1>
       </div>
 
       {/* Update & Add Bar */}
@@ -146,7 +148,7 @@ export default function JurnalPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(row.id)}
-                        className="bg-[#3B5D2A] text-white px-5 py-1 rounded-md font-medium hover:bg-red-700 transition text-base min-w-[70px]"
+                        className="bg-[#FF0000] text-white px-5 py-1 rounded-md font-medium hover:bg-red-700 transition text-base min-w-[70px]"
                         style={{borderRadius: '10px'}}
                       >
                         Hapus
