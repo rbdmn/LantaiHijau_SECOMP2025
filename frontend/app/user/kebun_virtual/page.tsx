@@ -164,7 +164,7 @@ function KebunVirtualPage() {
           {/* Title */}
           <div className="px-8 pt-8 mt-[60px]">
             <h1 className="text-[#3B5D2A] text-5xl font-bold mb-6" style={{ fontFamily: "inherit" }}>
-              Hasil Panen
+              Kebun Virtual
             </h1>
           </div>
           <div className="min-h-screen bg-white p-6 flex flex-col gap-4">

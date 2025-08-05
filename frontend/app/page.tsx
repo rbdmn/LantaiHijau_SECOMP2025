@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import NavbarUtama from "../components/navigation/navbar_utama";
@@ -30,14 +30,14 @@ export default function LandingPage() {
   const nextSlide = () => setSlide((slide + 1) % slides.length);
   const prevSlide = () => setSlide((slide - 1 + slides.length) % slides.length);
 
-  const tanamanPangan = [
-    { nama: "Tanaman Cabai", gambar: "/tanaman1.png" },
-    { nama: "Tanaman Tomat", gambar: "/tanaman2.png" },
-    { nama: "Tanaman Selada", gambar: "/tanaman3.png" },
-    { nama: "Tanaman Cabai", gambar: "/tanaman1.png" },
-    { nama: "Tanaman Tomat", gambar: "/tanaman2.png" },
-    { nama: "Tanaman Selada", gambar: "/tanaman3.png" },
-  ];
+  // Fetch tanaman from API
+  const [tanamanPangan, setTanamanPangan] = useState<any[]>([]);
+  useEffect(() => {
+    fetch("http://localhost:8000/api/tanaman")
+      .then((res) => res.json())
+      .then((data) => setTanamanPangan(data.slice(0, 9))) // show max 9 for grid
+      .catch(() => setTanamanPangan([]));
+  }, []);
   
 
   return (
@@ -95,18 +95,26 @@ export default function LandingPage() {
           Kenali lebih dalam berbagai jenis tanaman pangan yang menjadi sumber kehidupan kita sehari-hari. Pelajari cara menanam, merawat, dan memanen secara efisien, bahkan di ruang yang terbatas.
           </p>
           <div className="grid grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
-            {tanamanPangan.map((tanaman, i) => (
-              <div key={i} className="flex flex-col items-center  rounded-xl p-6 hover:shadow-lg transition-shadow duration-200">
-                <Image 
-                  src={tanaman.gambar}
-                  alt={tanaman.nama}
-                  width={250} 
-                  height={250}
-                  className="mb-4"
-                />
-                <span className="text-[#3C4F3A] font-semibold text-lg">{tanaman.nama}</span>
-              </div>
-            ))}
+            {tanamanPangan.length === 0 ? (
+              <div className="col-span-3 text-center text-gray-400">Belum ada data tanaman.</div>
+            ) : (
+              tanamanPangan.map((tanaman, i) => (
+                <div key={i} className="flex flex-col items-center rounded-xl p-6 hover:shadow-lg transition-shadow duration-200">
+                  <Image
+                    src={
+                      tanaman.foto_tanaman
+                        ? `http://localhost:8000/uploads/${tanaman.foto_tanaman}`
+                        : "/tanaman_default.png"
+                    }
+                    alt={tanaman.nama_tanaman}
+                    width={250}
+                    height={250}
+                    className="mb-4 object-cover rounded-lg"
+                  />
+                  <span className="text-[#3C4F3A] font-semibold text-lg">{tanaman.nama_tanaman}</span>
+                </div>
+              ))
+            )}
           </div>
           <div className="flex justify-center">
             <Link href="/jelajahi_tanaman">

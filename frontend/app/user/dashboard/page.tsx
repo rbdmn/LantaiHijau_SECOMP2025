@@ -79,6 +79,9 @@ export default function DashboardPage() {
           )}
 
           {/* Atas: Kebun Virtual & To-Do List */}
+          <h1 className="text-[#3B5D2A] text-5xl font-bold mb-6" style={{ fontFamily: "inherit" }}>
+              Dashboard
+            </h1>
           <div className="flex flex-col lg:flex-row gap-6 w-full">
             {/* Kebun Virtual */}
             <div className="flex-1 bg-[#EAF3E2] rounded-xl shadow p-6">
