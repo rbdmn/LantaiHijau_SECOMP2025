@@ -24,7 +24,16 @@ export default function LoginPage() {
         <div className="bg-[#E6EDDD] rounded-2xl shadow-lg px-8 py-12 w-full max-w-md flex flex-col items-center">
           <h1 className="text-4xl font-bold text-[#3B5D2A] mb-6">Login</h1>
           <div className="mb-6">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="45" stroke="#3B5D2A" strokeWidth="5"/><circle cx="50" cy="44" r="16" stroke="#3B5D2A" strokeWidth="4"/><path d="M80 82c0-16.569-13.431-30-30-30s-30 13.431-30 30" stroke="#3B5D2A" strokeWidth="4" strokeLinecap="round"/></svg>
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="48" stroke="#3B5D2A" strokeWidth="4" />
+            <circle cx="50" cy="35" r="15" stroke="#3B5D2A" strokeWidth="4" />
+            <path
+                d="M25 75c0-13.81 11.19-25 25-25s25 11.19 25 25"
+                stroke="#3B5D2A"
+                strokeWidth="4"
+                strokeLinecap="round"
+            />
+            </svg>
           </div>
           <form className="w-full flex flex-col gap-4">
             <input type="text" placeholder="Username" className="w-full px-4 py-3 rounded-md border border-[#C3D1B6] focus:outline-none focus:ring-2 focus:ring-[#3B5D2A] bg-white" />
