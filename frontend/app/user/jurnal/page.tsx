@@ -76,7 +76,8 @@ export default function JurnalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9F6] font-sans">
+    <div className="min-h-screen bg-[#F8F9F6] font-sans pl-30">
+      <Sidebar/>
        <NavbarUtama />
       
 

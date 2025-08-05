@@ -9,7 +9,7 @@ export default function DashboardPage() {
   const [form, setForm] = useState({ nama: "", panjang: "", lebar: "" });
 
   return (
-    <div className="min-h-screen bg-[#F8F9F6] flex flex-col pl-30">
+    <div className="min-h-screen bg-[#F8F9F6] flex flex-col pl-5">
 
     <Sidebar/>
       {/* Navbar at the very top */}
@@ -17,14 +17,13 @@ export default function DashboardPage() {
       
       {/* Main content with sidebar */}
       <div className="flex flex-1">
-        {/* Sidebar on the left */}
-        <Sidebar />
+        
         
         {/* Main content area */}
-        <div className="flex-1 p-6 pt-4 flex flex-col gap-6 ml-24"> {/* Added ml-24 to account for sidebar width */}
+        <div className="flex-1 p-6 pt-4 flex flex-col gap-6 ml-24 mt-15"> {/* Added ml-24 to account for sidebar width */}
           {/* Judul Dashboard with proper spacing */}
           <div className="mt-2">
-            <h1 className="text-3xl font-bold text-[#3B5D2A]">Dashboard</h1>
+            <h1 className="text-5xl font-bold text-[#3B5D2A]">Dashboard</h1>
           </div>
 
           {/* Modal Form Kebun Virtual */}
