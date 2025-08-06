@@ -8,17 +8,43 @@ import { MdOutlineEmail,MdLockOutline } from "react-icons/md";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 
+
+import { useRouter } from "next/navigation";
+
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", formData);
+    setError("");
+    setSuccess("");
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || Object.values(data.errors || {}).join(", "));
+      } else {
+        setSuccess("Login berhasil! Mengarahkan ke halaman utama...");
+        if (data.token) localStorage.setItem("token", data.token);
+        setTimeout(() => router.push("/"), 1200);
+      }
+    } catch (err) {
+      setError("Gagal terhubung ke server");
+    }
+    setLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -46,20 +46,35 @@ export default function NavbarUtama() {
             
           </div>
 
-          {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
-              href="/auth/login"
-              className="bg-[#5C7D5B] text-white px-6 py-2 rounded-full font-medium hover:bg-[#4A6B4A] transition-colors duration-200"
-            >
-              Login
-            </Link>
-            <Link 
-              href="/auth/register"
-              className="border-2 border-[#5C7D5B] text-[#5C7D5B] px-6 py-2 rounded-full font-medium hover:bg-[#5C7D5B] hover:text-white transition-colors duration-200"
-            >
-              Register
-            </Link>
+            {typeof window !== "undefined" && localStorage.getItem("token") ? (
+              <>
+                <Link href="/user/profile" className="flex items-center justify-center w-10 h-10 rounded-full border border-[#5C7D5B] hover:bg-[#E6F0E6] transition-colors">
+                  <svg width="24" height="24" fill="none" stroke="#5C7D5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8.38 8.38 0 0 1 13 0"/></svg>
+                </Link>
+                <button
+                  onClick={() => { localStorage.removeItem("token"); window.location.href = "/auth/login"; }}
+                  className="border-2 border-[#5C7D5B] text-[#5C7D5B] px-6 py-2 rounded-full font-medium hover:bg-[#5C7D5B] hover:text-white transition-colors duration-200 ml-2"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  href="/auth/login"
+                  className="bg-[#5C7D5B] text-white px-6 py-2 rounded-full font-medium hover:bg-[#4A6B4A] transition-colors duration-200"
+                >
+                  Login
+                </Link>
+                <Link 
+                  href="/auth/register"
+                  className="border-2 border-[#5C7D5B] text-[#5C7D5B] px-6 py-2 rounded-full font-medium hover:bg-[#5C7D5B] hover:text-white transition-colors duration-200"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
