@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import NavbarUtama from "../../../components/navigation/navbar_utama";
 import Link from "next/link";
-
+import { FaRegUserCircle, FaArrowLeft} from "react-icons/fa";
 
 import { useEffect } from "react";
 
@@ -114,17 +114,10 @@ export default function ProfilePage() {
             onClick={() => router.back()}
             aria-label="Back"
           >
-            &#8592;
+            <FaArrowLeft />
           </button>
           <h1 className="text-4xl font-bold text-[#304529] mb-4 mt-2">Profile</h1>
-          <div className="flex justify-center mb-6">
-            <div className="rounded-full bg-[#E6F0E6] p-5 border-4 border-[#304529]">
-              <svg width="64" height="64" fill="none" stroke="#304529" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="mx-auto">
-                <circle cx="32" cy="24" r="16" />
-                <path d="M12 56a20 20 0 0 1 40 0" />
-              </svg>
-            </div>
-          </div>
+          <FaRegUserCircle className="text-[#3C4F3A] text-6xl mx-auto mt-5 mb-5" />
           <form onSubmit={handleUpdate} className="space-y-5">
             <input
               type="email"

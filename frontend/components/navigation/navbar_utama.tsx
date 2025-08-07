@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { FaRegUserCircle } from "react-icons/fa";
 
 export default function NavbarUtama() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,8 +50,8 @@ export default function NavbarUtama() {
           <div className="hidden md:flex items-center space-x-4">
             {typeof window !== "undefined" && localStorage.getItem("token") ? (
               <>
-                <Link href="/user/profile" className="flex items-center justify-center w-10 h-10 rounded-full border border-[#5C7D5B] hover:bg-[#E6F0E6] transition-colors">
-                  <svg width="24" height="24" fill="none" stroke="#5C7D5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8.38 8.38 0 0 1 13 0"/></svg>
+                <Link href="/user/profile" className="flex items-center justify-center w-15 h-15">
+                  <FaRegUserCircle className="text-[#5C7D5B] text-4xl" />
                 </Link>
                 <button
                   onClick={() => { localStorage.removeItem("token"); window.location.href = "/auth/login"; }}
