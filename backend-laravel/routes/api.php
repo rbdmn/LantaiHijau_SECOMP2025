@@ -10,6 +10,7 @@ Route::get('/user', function (Request $request) {
 use App\Http\Controllers\TanamanController;
 Route::get('/tanaman', [TanamanController::class, 'index']);
 
+use App\Http\Controllers\KebunController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HasilPanenController;
 
@@ -30,3 +31,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/hasil_panen/{id}', [HasilPanenController::class, 'destroy']);
 
 });
+// Kebun routes (protected)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/kebun', [KebunController::class, 'index']);
+    Route::post('/kebun', [KebunController::class, 'store']);
+    Route::get('/koleksi-tanaman', [KebunController::class, 'koleksiTanaman']);
+    Route::patch('/kebun/{id}', [KebunController::class, 'update']);
+    Route::post('/kebun/harvest', [KebunController::class, 'harvestPlant']);
+    Route::delete('/kebun/{id}', [KebunController::class, 'destroy']);
+});
+
+Route::get('/tanaman', [TanamanController::class, 'index']);

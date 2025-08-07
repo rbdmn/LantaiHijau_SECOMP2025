@@ -15,6 +15,22 @@ export default function HasilPanenPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) return;
+    fetch("http://localhost:8000/api/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(user => {
+        return fetch(`http://localhost:8000/api/kebun?user_id=${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      })
+      .then(res => res ? res.json() : [])
+      .then(data => setKebunList(Array.isArray(data) ? data : []));
+  }, []);
+
   // Untuk sidebar
   useEffect(() => {
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -329,7 +345,7 @@ export default function HasilPanenPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9F6] font-sans pl-5">
-      <Sidebar/>
+      <Sidebar kebunList={kebunList} />
       <NavbarUtama />
       <div className="flex">
         {/* Konten Utama */}

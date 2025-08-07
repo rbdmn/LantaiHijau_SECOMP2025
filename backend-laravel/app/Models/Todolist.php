@@ -13,7 +13,7 @@ class Todolist extends Model
 
     protected $fillable = [
         'id_user',
-        'id_tanaman_kebun',
+        'id_kebun',
         'deskripsi',
     ];
 
@@ -23,8 +23,8 @@ class Todolist extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function tanamanKebun()
+    public function kebun()
     {
-        return $this->belongsTo(TanamanKebun::class, 'id_tanaman_kebun');
+        return $this->belongsTo(Kebun::class, 'id_kebun');
     }
 }
