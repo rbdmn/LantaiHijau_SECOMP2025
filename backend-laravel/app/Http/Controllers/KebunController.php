@@ -133,4 +133,15 @@ class KebunController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function destroy($id)
+    {
+        try {
+            $kebun = Kebun::findOrFail($id);
+            $kebun->delete();
+            return response()->json(['message' => 'Kebun berhasil dihapus']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal menghapus kebun'], 500);
+        }
+    }
 }

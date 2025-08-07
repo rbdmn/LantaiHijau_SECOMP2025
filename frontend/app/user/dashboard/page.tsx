@@ -199,18 +199,82 @@ export default function DashboardPage() {
             <div className="flex-1 bg-white rounded-xl shadow p-6">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-xl font-bold text-[#3B5D2A]">To-Do List</h2>
-                <span className="text-xs text-[#3B5D2A]">Senin, 25 Januari 2025</span>
+                <span className="text-xs text-[#3B5D2A]">
+                  {new Date().toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                  })}
+                </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                {[1,2,3,4,5,6].map((n) => (
-                  <div key={n} className="flex items-center gap-3 p-2 bg-[#F8F9F6] rounded-lg">
-                    <input type="checkbox" className="w-5 h-5 accent-[#3B5D2A]" />
-                    <div>
-                      <div className="font-semibold text-[#3B5D2A] leading-tight">Tanaman Cabai</div>
-                      <div className="text-sm text-[#222] leading-tight">Siram Hari ini!</div>
-                    </div>
-                  </div>
-                ))}
+                {kebunList.flatMap(kebun => {
+                  console.log('Processing kebun:', kebun.nama_kebun, 'Grid data:', kebun.grid_data);
+                  
+                  if (!kebun.grid_data) {
+                    console.log('No grid data for kebun:', kebun.nama_kebun);
+                    return [];
+                  }
+                  
+                  let gridData;
+                  try {
+                    gridData = typeof kebun.grid_data === 'string' ? 
+                      JSON.parse(kebun.grid_data) : kebun.grid_data;
+                    console.log('Parsed grid data for kebun:', kebun.nama_kebun, gridData);
+                  } catch (e) {
+                    console.error('Error parsing grid data for kebun:', kebun.nama_kebun, e);
+                    return [];
+                  }
+
+                  if (!gridData.tanaman || !Array.isArray(gridData.tanaman)) {
+                    console.log('No tanaman array found for kebun:', kebun.nama_kebun, gridData);
+                    return [];
+                  }
+
+                  console.log('Found tanaman array for kebun:', kebun.nama_kebun, 'Count:', gridData.tanaman.length);
+
+                  return gridData.tanaman
+                    .map((tanaman: any, index: number) => {
+                      console.log('Processing tanaman:', index, tanaman);
+                      
+                      // Untuk sementara, kita gunakan tanggal hari ini sebagai tanggal tanam jika tidak ada
+                      const tanggalTanam = new Date();
+                      const today = new Date();
+                      const daysSincePlanting = Math.floor(
+                        (today.getTime() - tanggalTanam.getTime()) / (1000 * 60 * 60 * 24)
+                      );
+                      
+                      console.log('Tanaman details:', {
+                        kebun: kebun.nama_kebun,
+                        index,
+                        tanggalTanam,
+                        daysSincePlanting,
+                        needsWatering: daysSincePlanting % 2 === 0
+                      });
+                      
+                      // Logika untuk menentukan apakah tanaman perlu disiram
+                      const needsWatering = daysSincePlanting % 2 === 0;
+                      
+                      if (!needsWatering) {
+                        console.log('Tanaman does not need watering:', index);
+                        return null;
+                      }
+                      
+                      return (
+                        <div key={`${kebun.id}-${index}`} className="flex items-center gap-3 p-2 bg-[#F8F9F6] rounded-lg">
+                          {/* <input type="checkbox" className="w-5 h-5 accent-[#3B5D2A]" /> */}
+                          <div>
+                            <div className="font-semibold text-[#3B5D2A] leading-tight">{kebun.nama_kebun}</div>
+                            <div className="text-sm text-[#222] leading-tight">
+                              Siram tanaman {tanaman.nama_tanaman || 'di posisi ' + (tanaman.posisi_x + 1) + ',' + (tanaman.posisi_y + 1)}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                    .filter(Boolean);
+                })}
               </div>
             </div>
           </div>

@@ -32,8 +32,8 @@ class Kebun extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function tanamanKebun()
-    {
-        return $this->hasMany(TanamanKebun::class, 'id_kebun');
-    }
+    // public function todolist()
+    // {
+    //     return $this->hasMany(Todolist::class, 'id_kebun');
+    // }
 }

@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/koleksi-tanaman', [KebunController::class, 'koleksiTanaman']);
     Route::patch('/kebun/{id}', [KebunController::class, 'update']);
     Route::post('/kebun/harvest', [KebunController::class, 'harvestPlant']);
+    Route::delete('/kebun/{id}', [KebunController::class, 'destroy']);
 });
 
 Route::get('/tanaman', [TanamanController::class, 'index']);
