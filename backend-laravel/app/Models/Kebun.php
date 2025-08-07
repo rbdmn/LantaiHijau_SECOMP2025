@@ -16,7 +16,15 @@ class Kebun extends Model
         'nama_kebun',
         'panjang',
         'lebar',
+        'created_at',
+        'updated_at',
+        'grid_data',
     ];
+
+    // protected $casts = [
+    //     'grid_data' => 'array',
+    // ];
+
 
     // Relationships
     public function user()

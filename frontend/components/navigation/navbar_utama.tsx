@@ -2,10 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function NavbarUtama() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Hydration-safe: cek token hanya di client
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsLoggedIn(!!localStorage.getItem("token"));
+    }
+  }, []);
 
   return (
     <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
@@ -14,12 +21,12 @@ export default function NavbarUtama() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-            <Image
-              src="/logo2.png"
-              alt="Logo"
-              width={120}
-              height={0} // boleh diisi 0, atau diabaikan karena Next.js akan sesuaikan
-            />
+              <Image
+                src="/logo2.png"
+                alt="Logo"
+                width={120}
+                height={0} // boleh diisi 0, atau diabaikan karena Next.js akan sesuaikan
+              />
             </Link>
           </div>
 
@@ -43,11 +50,10 @@ export default function NavbarUtama() {
             >
               Artikel
             </Link>
-            
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            {typeof window !== "undefined" && localStorage.getItem("token") ? (
+            {isLoggedIn ? (
               <>
                 <Link href="/user/profile" className="flex items-center justify-center w-10 h-10 rounded-full border border-[#5C7D5B] hover:bg-[#E6F0E6] transition-colors">
                   <svg width="24" height="24" fill="none" stroke="#5C7D5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8.38 8.38 0 0 1 13 0"/></svg>

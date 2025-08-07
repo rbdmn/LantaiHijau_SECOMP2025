@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import NavbarUtama from "../../../components/navigation/navbar_utama";
 import Sidebar from "../../../components/navigation/sidebar";
+import { useEffect } from "react";
 
 const initialPanen = [
   { id: 1, nama: "Cabai", tanggal: "18/12/2025", img: "/cabai.svg", kuantitas: "2090 gram", hargaTanam: 19000, hargaPasar: 30000, penghematan: 43700 },
@@ -17,6 +18,23 @@ export default function HasilPanenPage() {
   const [form, setForm] = useState({ nama: "", tanggal: "", kuantitas: "", hargaTanam: "" });
   const [total, setTotal] = useState(80860);
   const [cardChecked, setCardChecked] = useState<number | null>(null);
+  const [kebunList, setKebunList] = useState<any[]>([]);
+
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) return;
+    fetch("http://localhost:8000/api/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(user => {
+        return fetch(`http://localhost:8000/api/kebun?user_id=${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      })
+      .then(res => res ? res.json() : [])
+      .then(data => setKebunList(Array.isArray(data) ? data : []));
+  }, []);
 
   // Card selection
   // Untuk hasil panen
@@ -82,7 +100,7 @@ export default function HasilPanenPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9F6] font-sans pl-5">
-      <Sidebar/>
+      <Sidebar kebunList={kebunList} />
       <NavbarUtama />
       <div className="flex">
 
