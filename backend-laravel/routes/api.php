@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TanamanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\JurnalController;
+use App\Http\Controllers\KebunController;
+use App\Http\Controllers\HasilPanenController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -18,8 +20,7 @@ Route::get('/tanaman/{id}', [TanamanController::class, 'show']);
 Route::get('/tanaman-options', [JurnalController::class, 'getTanamanOptions']);
 Route::get('/tanaman', [TanamanController::class, 'index']);
 
-use App\Http\Controllers\KebunController;
-use App\Http\Controllers\HasilPanenController;
+
 
 // Auth routes
 Route::post('/register', [UserController::class, 'register']);
