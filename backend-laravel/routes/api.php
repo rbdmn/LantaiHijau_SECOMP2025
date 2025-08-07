@@ -16,6 +16,10 @@ Route::get('/tanaman/{id}', [TanamanController::class, 'show']);
 
 // Get tanaman options for dropdown (public access for form)
 Route::get('/tanaman-options', [JurnalController::class, 'getTanamanOptions']);
+Route::get('/tanaman', [TanamanController::class, 'index']);
+
+use App\Http\Controllers\KebunController;
+use App\Http\Controllers\HasilPanenController;
 
 // Auth routes
 Route::post('/register', [UserController::class, 'register']);
@@ -34,3 +38,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/jurnal/{id}', [JurnalController::class, 'update']);
     Route::delete('/jurnal/{id}', [JurnalController::class, 'destroy']);
 });
+Route::middleware('auth:sanctum')->get('/me', [UserController::class, 'me']);
+
+// Hasil Panen routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/hasil-panen', [HasilPanenController::class, 'index']);
+    Route::put('/hasil-panen/{id}', [HasilPanenController::class, 'update']);
+    
+    // Route untuk debugging - bisa dihapus setelah selesai
+    Route::get('/hasil-panen/{id}/debug', [HasilPanenController::class, 'debug']);
+
+    
+    Route::delete('/hasil_panen/{id}', [HasilPanenController::class, 'destroy']);
+
+});
+// Kebun routes (protected)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/kebun', [KebunController::class, 'index']);
+    Route::post('/kebun', [KebunController::class, 'store']);
+    Route::get('/koleksi-tanaman', [KebunController::class, 'koleksiTanaman']);
+    Route::patch('/kebun/{id}', [KebunController::class, 'update']);
+    Route::post('/kebun/harvest', [KebunController::class, 'harvestPlant']);
+    Route::delete('/kebun/{id}', [KebunController::class, 'destroy']);
+});
+
+Route::get('/tanaman', [TanamanController::class, 'index']);
