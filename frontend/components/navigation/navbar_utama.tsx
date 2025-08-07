@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import React from 'react';
 
 export default function NavbarUtama() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

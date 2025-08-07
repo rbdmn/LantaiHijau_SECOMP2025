@@ -43,4 +43,40 @@ class Tanaman extends Model
     {
         return $this->hasMany(Jurnal::class, 'id_tanaman');
     }
+    public function jurnal()
+    {
+        return $this->hasMany(Jurnal::class, 'id_tanaman');
+    }
+
+    // Relasi ke panduan tanaman
+    public function panduan()
+    {
+        return $this->hasMany(PanduanTanaman::class)->orderBy('step_number');
+    }
+}
+
+class PanduanTanaman extends Model
+{
+    use HasFactory;
+
+    protected $table = 'panduan_tanaman';
+    
+    protected $fillable = [
+        'tanaman_id',
+        'step_number',
+        'step_title',
+        'step_content',
+        'alat_bahan',
+        'tips'
+    ];
+
+    protected $casts = [
+        'alat_bahan' => 'array'
+    ];
+
+    // Relasi balik ke tanaman
+    public function tanaman()
+    {
+        return $this->belongsTo(Tanaman::class);
+    }
 }
