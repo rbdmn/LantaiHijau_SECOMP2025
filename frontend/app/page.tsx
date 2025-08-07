@@ -89,43 +89,30 @@ export default function LandingPage() {
       </section>
 
       {/* Jelajahi Tanaman Pangan */}
-      <section className="bg-white py-20">
-        <div className="max-w-6xl mx-auto px-8">
-          <h2 className="text-4xl font-bold text-[#3C4F3A] text-center mb-4">Jelajahi Tanaman Pangan</h2>
-          <p className="text-center text-gray-600 mb-12 text-lg max-w-3xl mx-auto">
-          Kenali lebih dalam berbagai jenis tanaman pangan yang menjadi sumber kehidupan kita sehari-hari. Pelajari cara menanam, merawat, dan memanen secara efisien, bahkan di ruang yang terbatas.
-          </p>
-          <div className="grid grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
-            {tanamanPangan.length === 0 ? (
-              <div className="col-span-3 text-center text-gray-400">Belum ada data tanaman.</div>
-            ) : (
-              tanamanPangan.map((tanaman, i) => (
-                <div key={i} className="flex flex-col items-center rounded-xl p-6 hover:shadow-lg transition-shadow duration-200">
-                  <Image
-                    src={
-                      tanaman.foto_tanaman
-                        ? `http://localhost:8000/uploads/${tanaman.foto_tanaman}`
-                        : "/tanaman_default.png"
-                    }
-                    alt={tanaman.nama_tanaman}
-                    width={250}
-                    height={250}
-                    className="mb-4 object-cover rounded-lg"
-                  />
-                  <span className="text-[#3C4F3A] font-semibold text-lg">{tanaman.nama_tanaman}</span>
-                </div>
-              ))
-            )}
-          </div>
-          <div className="flex justify-center">
-            <Link href="/jelajahi_tanaman">
-              <button className="bg-[#E6F0E6] text-[#5C7D5B] px-8 py-3 rounded-full font-medium shadow-lg hover:bg-[#D4E8D4] transition-colors duration-200">
-                Lihat Semua
-              </button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <div className="grid grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
+      {tanamanPangan.length === 0 ? (
+        <div className="col-span-3 text-center text-gray-400">Belum ada data tanaman.</div>
+      ) : (
+        tanamanPangan.map((tanaman, i) => (
+          <Link key={i} href={`/jelajahi_tanaman/detail/${tanaman.id}`} passHref>
+            <div className="flex flex-col items-center rounded-xl p-6 hover:shadow-lg transition-shadow duration-200 cursor-pointer">
+              <Image
+                src={
+                  tanaman.foto_tanaman
+                    ? `http://localhost:8000/uploads/${tanaman.foto_tanaman}`
+                    : "/tanaman_default.png"
+                }
+                alt={tanaman.nama_tanaman}
+                width={250}
+                height={250}
+                className="mb-4 object-cover rounded-lg"
+              />
+              <span className="text-[#3C4F3A] font-semibold text-lg">{tanaman.nama_tanaman}</span>
+            </div>
+          </Link>
+        ))
+      )}
+    </div>
 
       {/* Tentang Kita */}
       <section className="py-20 bg-gray-50">

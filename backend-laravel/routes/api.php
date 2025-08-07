@@ -1,23 +1,58 @@
-
 <?php
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TanamanController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\JurnalController;
+use App\Http\Controllers\KebunController;
+use App\Http\Controllers\HasilPanenController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Tanaman routes (public access)
+Route::get('/tanaman', [TanamanController::class, 'index']);
+Route::get('/tanaman/{id}', [TanamanController::class, 'show']);
 
-use App\Http\Controllers\TanamanController;
-use App\Http\Controllers\KebunController;
-use App\Http\Controllers\UserController;
+// Get tanaman options for dropdown (public access for form)
+Route::get('/tanaman-options', [JurnalController::class, 'getTanamanOptions']);
+Route::get('/tanaman', [TanamanController::class, 'index']);
+
+
 
 // Auth routes
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
+
+// Protected routes - require authentication
+Route::middleware('auth:sanctum')->group(function () {
+    // User routes
+    Route::get('/me', [UserController::class, 'me']);
+    
+    // Jurnal routes
+    Route::get('/jurnal', [JurnalController::class, 'index']);
+    Route::post('/jurnal', [JurnalController::class, 'store']);
+    Route::get('/jurnal/{id}', [JurnalController::class, 'show']);
+    Route::put('/jurnal/{id}', [JurnalController::class, 'update']);
+    Route::patch('/jurnal/{id}', [JurnalController::class, 'update']);
+    Route::delete('/jurnal/{id}', [JurnalController::class, 'destroy']);
+});
 Route::middleware('auth:sanctum')->get('/me', [UserController::class, 'me']);
 
+// Hasil Panen routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/hasil-panen', [HasilPanenController::class, 'index']);
+    Route::put('/hasil-panen/{id}', [HasilPanenController::class, 'update']);
+    
+    // Route untuk debugging - bisa dihapus setelah selesai
+    Route::get('/hasil-panen/{id}/debug', [HasilPanenController::class, 'debug']);
+
+    
+    Route::delete('/hasil_panen/{id}', [HasilPanenController::class, 'destroy']);
+
+});
 // Kebun routes (protected)
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/kebun', [KebunController::class, 'index']);

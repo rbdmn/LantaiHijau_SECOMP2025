@@ -11,6 +11,8 @@ class HasilPanen extends Model
 
     protected $table = 'hasil_panen';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'id_user',
         'id_tanaman',
