@@ -18,7 +18,6 @@ Route::get('/tanaman/{id}', [TanamanController::class, 'show']);
 
 // Get tanaman options for dropdown (public access for form)
 Route::get('/tanaman-options', [JurnalController::class, 'getTanamanOptions']);
-Route::get('/tanaman', [TanamanController::class, 'index']);
 
 
 
@@ -63,4 +62,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/kebun/{id}', [KebunController::class, 'destroy']);
 });
 
-Route::get('/tanaman', [TanamanController::class, 'index']);

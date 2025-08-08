@@ -14,7 +14,7 @@ export default function LandingPage() {
       title: "Selamat Datang",
       desc: `Website untuk kamu yang ingin mulai berkebun di rumah, meski dengan lahan yang terbatas.
             Temukan tips, panduan, dan inspirasi untuk menciptakan kebun hijau dalam ruang sempit lebih segar, lebih sehat, lebih hijau!`,
-      img: "/tanaman_landing.png",
+      img: "/tanaman.png",
       buttonText: "Mulai Sekarang",
       buttonLink: "/auth/register",
     },
@@ -47,9 +47,68 @@ export default function LandingPage() {
       
       
       {/* Hero Carousel Section */}
-      <section className="w-full h-[600px] flex items-center justify-center px-6 md:px-20 bg-gradient-to-t from-[#304529] to-[#557C49] relative mt-16 overflow-hidden">
-        <div className="max-w-6xl flex flex-col md:flex-row items-center justify-center gap-30 z-10 text-center md:text-left">
-          <div className="max-w-lg">
+     <section className="relative w-full h-[600px] flex items-center justify-center px-6 md:px-20 bg-gradient-to-t from-[#304529] to-[#557C49] mt-16 overflow-hidden">
+
+      {/* Dekorasi dedaunan kiri atas */}
+      <Image
+        src="/daun.png"
+        alt="Daun kiri atas"
+        width={250}
+        height={250}
+        className="absolute top-0 left-0 rotate-[-15deg]"
+      />
+
+      {/* Dekorasi dedaunan kanan bawah */}
+      <Image
+        src="/daun.png"
+        alt="Daun kanan bawah"
+        width={250}
+        height={250}
+        className="absolute bottom-0 right-0 rotate-[15deg]"
+      />
+
+      {/* Dekorasi dedaunan kiri bawah (blur halus) */}
+      <Image
+        src="/daun.png"
+        alt="Daun kiri bawah"
+        width={200}
+        height={200}
+        className="absolute bottom-0 left-5 rotate-[25deg] blur-[5px]"
+      />
+
+      {/* Dekorasi dedaunan kanan atas (blur sedang) */}
+      <Image
+        src="/daun.png"
+        alt="Daun kanan atas"
+        width={200}
+        height={200}
+        className="absolute top-5 right-10 rotate-[-25deg]"
+      />
+
+      {/* Dekorasi dedaunan tengah kanan (blur halus + transparan) */}
+      <Image
+        src="/daun.png"
+        alt="Daun tengah kanan"
+        width={180}
+        height={180}
+        className="absolute top-1/2 right-0 rotate-[5deg] translate-y-[-50%] blur-[5px]"
+      />
+
+        {/* Konten */}
+        <div className="max-w-6xl flex flex-col md:flex-row items-center justify-between w-full z-10 text-center md:text-left">
+          {/* Teks */}
+          <div className="max-w-lg mx-auto md:ml-20">
+            {/* Logo di atas judul */}
+          <div className="flex justify-center md:justify-start mb-8">
+            <Image
+              src="/logo_white.png" // ganti dengan path logo kamu
+              alt="Logo Lantai Hijau"
+              width={150}
+              height={150}
+              className="drop-shadow-lg"
+            />
+          </div>
+
             <h1 className="text-5xl font-bold text-white mb-6">{slides[slide].title}</h1>
             <p className="text-white mb-8 text-lg leading-relaxed">{slides[slide].desc}</p>
             <Link href={slides[slide].buttonLink}>
@@ -58,37 +117,54 @@ export default function LandingPage() {
               </button>
             </Link>
           </div>
-          <div className="relative">
-            <Image 
-              src={slides[slide].img} 
-              alt="Hero Gambar" 
-              width={380} 
-              height={380}
-              className="drop-shadow-xl"
+
+          {/* Gambar utama */}
+        <div className="absolute bottom-0 right-20 top-0">
+            <Image
+              src={slides[slide].img}
+              alt="Hero Gambar"
+              width={700}
+              height={700}
+              className="drop-sha10ow-xl"
             />
           </div>
         </div>
 
-        {/* Arrows */}
-        <button 
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-200 transition-colors"
-        >
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button 
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-200 transition-colors"
-        >
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        {/* Navigasi slide */}
+<button 
+  onClick={prevSlide}
+  className="absolute left-12 top-1/2 -translate-y-1/2 text-white 
+             bg-white/20 p-3 rounded-full backdrop-blur-sm
+             hover:bg-white/30 hover:scale-110 hover:shadow-lg 
+             transition-all duration-300 z-20"
+>
+  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+  </svg>
+</button>
+
+<button 
+  onClick={nextSlide}
+  className="absolute right-12 top-1/2 -translate-y-1/2 text-white 
+             bg-white/20 p-3 rounded-full backdrop-blur-sm
+             hover:bg-white/30 hover:scale-110 hover:shadow-lg 
+             transition-all duration-300 z-20"
+>
+  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+</button>
+
       </section>
 
+
       {/* Jelajahi Tanaman Pangan */}
+      <div className="max-w-6xl mx-auto px-6 md:px-20 py-16">
+        <h2 className="text-4xl font-bold text-[#3C4F3A] text-center mb-4"> Jelajahi Tanaman</h2>
+          <p className="text-center text-gray-600 mb-12 text-lg max-w-3xl mx-auto">
+            Temukan berbagai jenis tanaman konsumsi yang cocok ditanam di pot, lengkap dengan informasi musim, waktu tumbuh, dan manfaatnya untuk kehidupan sehari-hari.
+          </p>
+      </div>
       <div className="grid grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
       {tanamanPangan.length === 0 ? (
         <div className="col-span-3 text-center text-gray-400">Belum ada data tanaman.</div>
@@ -196,7 +272,9 @@ Bersama Lantai Hijau, mari tumbuhkan kehidupan mulai dari lantai rumahmu.
                 />
               </div>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Mauris egestas turpis. Vitae pulvinar lobortis vel ut at. Sed facilisis vestibulum, sed bibendum. Vitae tristique suspendisse condimentum pulvinar rutrum dui sed tincidunt ut. Mauris porttitor diam facilisis sit amet.
+                Musim hujan sering kali menjadi tantangan bagi para petani maupun penghobi tanaman cabai.
+                Curah hujan yang tinggi dapat menyebabkan tanaman menjadi rentan terhadap serangan penyakit
+                dan kerusakan akar.
               </p>
             </div>
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
@@ -212,7 +290,7 @@ Bersama Lantai Hijau, mari tumbuhkan kehidupan mulai dari lantai rumahmu.
                 />
               </div>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Mauris egestas turpis. Vitae pulvinar lobortis vel ut at. Sed facilisis vestibulum, sed bibendum. Vitae tristique suspendisse condimentum pulvinar rutrum dui sed tincidunt ut. Mauris porttitor diam facilisis sit amet.
+                Di tengah keterbatasan lahan di perkotaan, seorang pemuda asal Bandung berhasil membuktikan bahwa menanam sayuran sendiri di rumah bukanlah hal yang mustahil.
               </p>
             </div>
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
@@ -228,7 +306,7 @@ Bersama Lantai Hijau, mari tumbuhkan kehidupan mulai dari lantai rumahmu.
                 />
               </div>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Mauris egestas turpis. Vitae pulvinar lobortis vel ut at. Sed facilisis vestibulum, sed bibendum. Vitae tristique suspendisse condimentum pulvinar rutrum dui sed tincidunt ut. Mauris porttitor diam facilisis sit amet.
+                Menanam bawang di rumah kini semakin populer, terutama bagi mereka yang ingin mandiri dalam kebutuhan dapur harian. Selain mudah ditanam, bawang merah maupun bawang putih bisa tumbuh subur di pot kecil atau lahan sempit sekalipun.
               </p>
             </div>
           </div>

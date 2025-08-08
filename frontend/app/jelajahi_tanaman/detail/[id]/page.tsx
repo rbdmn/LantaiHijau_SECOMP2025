@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import NavbarUtama from "../../../../components/navigation/navbar_utama";
+import { FaRegLightbulb } from "react-icons/fa6";
 
 interface PanduanTanaman {
   id: number;
@@ -60,7 +61,7 @@ export default function DetailTanaman() {
   const fetchTanamanDetail = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/tanaman/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/tanaman/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +86,7 @@ export default function DetailTanaman() {
 
   const fetchRekomendasiTanaman = async () => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/tanaman`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/tanaman`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -263,15 +264,15 @@ export default function DetailTanaman() {
             <div className="text-[#222] text-base mb-2">{tanaman.deskripsi}</div>
             <div className="text-[#222] text-base font-bold mb-1">Detail Tanaman</div>
             <div className="flex flex-wrap gap-6 mb-2">
-              <span className="bg-[#B7C9A6] text-[#3B5D2A] rounded-md px-3 py-1 text-sm font-semibold">Suhu : {tanaman.suhu}</span>
-              <span className="bg-[#B7C9A6] text-[#3B5D2A] rounded-md px-3 py-1 text-sm font-semibold flex items-center gap-1">Level :
+              <span className="bg-[#FFFFFF] text-[#3B5D2A] rounded-md px-3 py-1 text-sm font-semibold">Suhu : {tanaman.suhu}</span>
+              <span className="bg-[#FFFFFF] text-[#3B5D2A] rounded-md px-3 py-1 text-sm font-semibold flex items-center gap-1">Level :
                 <span className="flex items-center gap-0.5">
                   {Array.from({ length: tanaman.level_kesulitan }).map((_, i) => (
                     <svg key={i} width="18" height="18" fill="#FFD600" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                   ))}
                 </span>
               </span>
-              <span className="bg-[#B7C9A6] text-[#3B5D2A] rounded-md px-3 py-1 text-sm font-semibold">Harga : Rp.{tanaman.rata_harga.toLocaleString("id-ID")}</span>
+              <span className="bg-[#FFFFFF] text-[#3B5D2A] rounded-md px-3 py-1 text-sm font-semibold">Harga : Rp.{tanaman.rata_harga.toLocaleString("id-ID")}</span>
             </div>
             <div className="flex flex-wrap gap-4 mb-2 justify-between">
             <div className="flex flex-col items-center pr-3 min-w-[100px]">
@@ -364,7 +365,7 @@ export default function DetailTanaman() {
 
                 {tanaman.panduan && tanaman.panduan.length > 0 && (
                 <div className="flex flex-col sm:flex-row gap-8 justify-center items-center w-full">
-                    {tanaman.panduan.slice(0, 4).map((panduan) => (
+                    {tanaman.panduan.slice(0, 5).map((panduan) => (
                     <div
                         key={panduan.id}
                         className="flex-1 min-w-[120px] max-w-[200px] h-52 bg-[#4A6741] rounded-lg flex flex-col justify-between items-center p-4"
@@ -408,10 +409,11 @@ export default function DetailTanaman() {
                         )}
                         
                         {panduan.tips && (
-                            <div className="mt-2 p-2 bg-[#B7C9A6] bg-opacity-30 rounded">
-                            <span className="font-semibold text-[#3B5D2A]">💡 Tips: </span>
+                          <div className="mt-2 p-2 bg-[#B7C9A6] bg-opacity-30 rounded flex items-center gap-2">
+                            <FaRegLightbulb className="text-[#3B5D2A]" />
+                            <span className="font-semibold text-[#3B5D2A]">Tips:</span>
                             <span className="text-sm">{panduan.tips}</span>
-                            </div>
+                          </div>
                         )}
                         </div>
                     </li>
@@ -449,9 +451,9 @@ export default function DetailTanaman() {
                     <Link 
                     key={item.id} 
                     href={`/jelajahi_tanaman/detail/${item.id}`}
-                    className="bg-[#8CB97A] rounded-2xl p-6 flex flex-col items-center min-w-[220px] max-w-[240px] shadow-lg hover:bg-[#7AA969] transition-colors cursor-pointer"
+                    className="bg-[#9DBDA5] rounded-2xl p-6 flex flex-col items-center min-w-[220px] max-w-[240px] shadow-lg hover:bg-[#7AA969] transition-colors cursor-pointer"
                     >
-                    <div className="w-[150px] h-[150px] rounded-lg overflow-hidden mb-3">
+                    <div className="w-[200px] h-[200px] rounded-lg overflow-hidden mb-3">
                         <Image 
                         src={getImageUrl(item.foto_tanaman)} 
                         alt={item.nama_tanaman} 
