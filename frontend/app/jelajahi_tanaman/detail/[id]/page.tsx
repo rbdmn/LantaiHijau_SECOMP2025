@@ -46,8 +46,10 @@ export default function DetailTanaman() {
   const [estResult, setEstResult] = useState<string | null>(null);
   const [showSaved, setShowSaved] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [rekomendasiTanaman, setRekomendasiTanaman] = useState<Tanaman[]>([]);
+  const [rekomendasiTanaman, setRekomendasiTanaman] = useState<Tanaman[]>([])
 
+  const [isInCollection, setIsInCollection] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   // Check if user is logged in
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -110,9 +112,9 @@ export default function DetailTanaman() {
     if (id) {
       fetchTanamanDetail();
       fetchRekomendasiTanaman();
-      
+      checkIfInCollection(); // Tambahkan ini
     }
-  }, [id]);
+  }, [id, isLoggedIn]);
 
   // Function untuk mendapatkan URL gambar yang benar
     const getImageUrl = (fotoTanaman: string) => {
@@ -178,16 +180,73 @@ export default function DetailTanaman() {
     setEstResult(result);
   };
 
-  // Handle save to collection or redirect to login
-  const handleSaveCollection = () => {
+  const handleSaveCollection = async () => {
     if (isLoggedIn) {
-      // User is logged in, show success message
-      setShowSaved(true);
-      setTimeout(() => setShowSaved(false), 2000);
-      // TODO: Add actual API call to save to collection
+      // Pastikan tanaman data sudah loaded
+      if (!tanaman || !tanaman.id) {
+        alert('Data tanaman belum dimuat. Silakan tunggu sebentar.');
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('token');
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/koleksi-tanaman`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            id_tanaman: tanaman.id
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // Success - show success message
+          setShowSaved(true);
+          setTimeout(() => setShowSaved(false), 2000);
+        } else {
+          // Handle error (misalnya tanaman sudah ada di koleksi)
+          console.error('Error saving to collection:', data.message);
+          // Anda bisa menambahkan state untuk menampilkan pesan error
+          alert(data.message || 'Gagal menyimpan ke koleksi');
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+        alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+      }
     } else {
       // User not logged in, redirect to login
       router.push('/auth/login');
+    }
+  };
+
+  const checkIfInCollection = async () => {
+    if (isLoggedIn && tanaman?.id) {
+      try {
+        const token = localStorage.getItem('token');
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/koleksi-tanaman/check/${tanaman.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+          setIsInCollection(data.exists); // Anda perlu menambahkan state ini
+        }
+      } catch (error) {
+        console.error('Error checking collection:', error);
+      }
     }
   };
 
@@ -303,18 +362,42 @@ export default function DetailTanaman() {
                 <span className="text-[#3B5D2A] text-base font-bold text-center leading-tight">{tanaman.musim_panen}</span>
             </div>
             </div>
+            // Update tampilan tombol di JSX
             <button
-              className="w-full py-2 rounded-md bg-[#4B6A3D] text-white font-semibold text-lg shadow hover:brightness-95 transition mt-2 flex items-center justify-center gap-2 relative"
+              className={`w-full py-2 rounded-md font-semibold text-lg shadow transition mt-2 flex items-center justify-center gap-2 relative ${
+                isInCollection 
+                  ? 'bg-gray-500 text-white cursor-not-allowed' 
+                  : 'bg-[#4B6A3D] text-white hover:brightness-95'
+              }`}
               onClick={handleSaveCollection}
+              disabled={isLoading || (isLoggedIn && isInCollection)}
             >
-              {isLoggedIn ? (
+              {isLoading ? (
                 <>
-                  <svg width="22" height="22" fill="none" stroke="white" strokeWidth="2.2" viewBox="0 0 24 24" className="mr-1"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>
-                  Simpan ke Koleksi
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  Menyimpan...
                 </>
+              ) : isLoggedIn ? (
+                isInCollection ? (
+                  <>
+                    <svg width="22" height="22" fill="none" stroke="white" strokeWidth="2.2" viewBox="0 0 24 24" className="mr-1">
+                      <path d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Sudah di Koleksi
+                  </>
+                ) : (
+                  <>
+                    <svg width="22" height="22" fill="none" stroke="white" strokeWidth="2.2" viewBox="0 0 24 24" className="mr-1">
+                      <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/>
+                    </svg>
+                    Simpan ke Koleksi
+                  </>
+                )
               ) : (
                 <>
-                  <svg width="22" height="22" fill="none" stroke="white" strokeWidth="2.2" viewBox="0 0 24 24" className="mr-1"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                  <svg width="22" height="22" fill="none" stroke="white" strokeWidth="2.2" viewBox="0 0 24 24" className="mr-1">
+                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                  </svg>
                   Silahkan Login untuk masukan ke koleksi
                 </>
               )}
