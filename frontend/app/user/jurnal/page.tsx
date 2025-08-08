@@ -29,6 +29,7 @@ export default function JurnalPage() {
   const [editId, setEditId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [kebunList, setKebunList] = useState<any[]>([]);
   const [form, setForm] = useState({
     id_tanaman: "",
     mulai_menanam: "",
@@ -66,6 +67,24 @@ export default function JurnalPage() {
     console.log('Token found, setting authenticated to true');
     setIsAuthenticated(true);
     fetchJurnalData();
+  }, []);
+
+  // Untuk sidebar
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) return;
+    fetch("http://localhost:8000/api/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(user => { 
+        return fetch(`http://localhost:8000/api/kebun?user_id=${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      })
+      .then(res => res ? res.json() : [])
+      .then(data => setKebunList(Array.isArray(data) ? data : []))
+      .catch(err => console.error("Error fetching kebun:", err));
   }, []);
 
   useEffect(() => {
@@ -405,7 +424,7 @@ export default function JurnalPage() {
   return (
     <div className="min-h-screen bg-[#F8F9F6] font-sans pl-30">
       
-      <Sidebar/>
+      <Sidebar kebunList={kebunList} />
       <NavbarUtama />
 
       {/* Title */}
@@ -534,7 +553,7 @@ export default function JurnalPage() {
 
       {/* Modal Form Tambah/Edit */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
           <div className="rounded-xl shadow-lg p-8 w-full max-w-md relative border bg-[#E8F1DE] bg-opacity-95" style={{minWidth:340}}>
             <button
               className="absolute top-4 right-4 text-2xl text-[#3B5D2A] hover:text-red-600 font-bold"

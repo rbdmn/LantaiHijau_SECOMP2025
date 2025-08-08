@@ -97,6 +97,7 @@ function KebunVirtualPage() {
   const [textCell, setTextCell] = useState<{ row: number; col: number } | null>(null);
   const [saveNotif, setSaveNotif] = useState("");
   const [saveNotifType, setSaveNotifType] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   // Remove pointer tool, always allow info popup
   const [plantInfoCell, setPlantInfoCell] = useState<{ row: number; col: number } | null>(null);
@@ -425,11 +426,13 @@ function KebunVirtualPage() {
       if (!res.ok) throw new Error('Gagal menyimpan grid');
       setSaveNotif('Berhasil disimpan!');
       setSaveNotifType('success');
+      setShowToast(true);
     } catch (e) {
       setSaveNotif('Gagal menyimpan grid');
       setSaveNotifType('error');
+      setShowToast(true);
     }
-    setTimeout(() => { setSaveNotif(""); setSaveNotifType(""); }, 2500);
+    setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
   }
 
   useEffect(() => {
@@ -579,6 +582,18 @@ function KebunVirtualPage() {
   return (
     <div className="h-screen bg-[#F8F9F6] font-sans overflow-hidden flex flex-col">
       <NavbarUtama />
+      {/* Toast Notification */}
+      {showToast && (
+        <div className={`fixed top-8 left-1/2 z-[9999] -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-fadeIn ${saveNotifType === 'success' ? 'bg-green-100 border border-green-400 text-green-800' : 'bg-red-100 border border-red-400 text-red-800'}`}
+          style={{ minWidth: 220, maxWidth: 340 }}>
+          {saveNotifType === 'success' ? (
+            <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+          ) : (
+            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          )}
+          <span className="font-semibold text-base">{saveNotif}</span>
+        </div>
+      )}
       <div className="flex h-screen">
         {/* Sidebar dengan kebunList */}
         <Sidebar kebunList={kebunList} />
@@ -648,9 +663,6 @@ function KebunVirtualPage() {
               >
                 <span className="material-icons align-middle mr-1" style={{ fontSize: 16 }}>Save</span>
               </button>
-              {saveNotif && (
-                <span className={`ml-2 text-xs font-semibold ${saveNotifType === 'success' ? 'text-green-600' : 'text-red-600'}`}>{saveNotif}</span>
-              )}
             </div>
 
             {/* Main Content */}
@@ -855,8 +867,13 @@ function KebunVirtualPage() {
                       })()}
                       {/* Harvest notification */}
                       {saveNotif && saveNotifType === 'harvest' && (
-                        <div className={`text-sm mb-2 ${saveNotif.toLowerCase().includes('gagal') || saveNotif.toLowerCase().includes('error') ? 'text-red-600' : 'text-green-600'}`}>
-                          {saveNotif}
+                        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg shadow text-sm mb-2 animate-fadeIn ${saveNotif.toLowerCase().includes('gagal') || saveNotif.toLowerCase().includes('error') ? 'bg-red-100 border border-red-400 text-red-800' : 'bg-green-100 border border-green-400 text-green-800'}`}>
+                          {saveNotif.toLowerCase().includes('gagal') || saveNotif.toLowerCase().includes('error') ? (
+                            <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                          ) : (
+                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                          )}
+                          <span className="font-semibold">{saveNotif}</span>
                         </div>
                       )}
                       <button
@@ -867,6 +884,7 @@ function KebunVirtualPage() {
                             console.error('Missing data:', { tanamanInfo, kebun });
                             setSaveNotif("Data tanaman tidak lengkap");
                             setSaveNotifType("error");
+                            setShowToast(true);
                             return;
                           }
 
@@ -947,15 +965,17 @@ function KebunVirtualPage() {
                               }
                               return newGrid;
                             });
-                            
                             setSaveNotif("Berhasil memanen!");
                             setSaveNotifType("success");
+                            setShowToast(true);
                           }, 100);
                           } catch (error) {
                             console.error('Harvest error:', error);
                             setSaveNotif(error instanceof Error ? error.message : "Gagal memanen tanaman");
                             setSaveNotifType("error");
+                            setShowToast(true);
                           }
+                          setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
                         }}
                       >
                         Panen
@@ -968,8 +988,8 @@ function KebunVirtualPage() {
               {/* Right Sidebar - Takes 30% width */}
               <div className="w-[30%] flex flex-col gap-4 overflow-hidden">
                 {/* Top Right Container - Informasi Kebun */}
-                <div className="bg-[#EAF3E2] border-2 border-black rounded-lg shadow-md p-4">
-                  <h2 className="text-lg font-bold text-[#3B5D2A] text-center mb-3">Informasi Kebun</h2>
+                <div className="bg-[#EAF3E2] rounded-lg shadow-md p-4">
+                  <h2 className="text-lg font-bold text-[#3B5D2A] mb-3">Informasi Kebun</h2>
                   <div className="space-y-3">
                     <div>
                       <label className="block text-sm font-medium text-[#3B5D2A] mb-1">Nama Kebun</label>
@@ -1001,8 +1021,9 @@ function KebunVirtualPage() {
                 </div>
 
                 {/* Bottom Right Container - Koleksi Tanaman */}
-                <div className="bg-[#F8F9F6] border-2 border-black rounded-lg shadow-md p-4 flex-1 flex flex-col min-h-0">
-                  <h2 className="text-lg font-bold text-[#3B5D2A] mb-3 sticky top-0 bg-[#F8F9F6] z-10">Koleksi Tanaman</h2>
+                <div className="bg-[#EAF3E2] rounded-lg shadow-md p-4 flex-1 flex flex-col min-h-0">
+
+                  <h2 className="text-lg font-bold text-[#3B5D2A] mb-3 sticky top-0 bg-[#EAF3E2] z-10">Koleksi Tanaman</h2>
                   <div className="space-y-3 overflow-y-auto flex-1 pr-2">
                     {koleksiTanaman.length === 0 ? (
                       <div className="text-[#3B5D2A] text-sm">Belum ada koleksi tanaman.</div>
@@ -1018,7 +1039,7 @@ function KebunVirtualPage() {
                           }
                         }
                         return (
-                          <div key={item.id} className="flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-200">
+                          <div key={item.id} className="flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-200 shadow">
                             <Image
                               src={imgSrc}
                               alt={item.tanaman?.nama_tanaman || "Tanaman"}
@@ -1048,7 +1069,7 @@ function KebunVirtualPage() {
             {/* Bottom Control Panel */}
             <div className="flex gap-6 mt-4">
               {/* Warna Section */}
-              <div className="bg-[#EAF3E2] border-2 border-black rounded-lg shadow-md p-4 w-[40%] relative">
+              <div className="bg-[#EAF3E2] rounded-lg shadow-md p-4 w-[40%] relative">
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="text-lg font-bold text-[#3B5D2A]">Warna</h3>
                   <button
@@ -1085,7 +1106,7 @@ function KebunVirtualPage() {
               </div>
 
               {/* Bayangan Section */}
-              <div className="bg-[#EAF3E2] border-2 border-black rounded-lg shadow-md p-4 w-[30%]">
+              <div className="bg-[#EAF3E2] rounded-lg shadow-md p-4 w-[30%]">
                 <h3 className="text-lg font-bold text-[#3B5D2A] mb-3">Bayangan</h3>
                 <div className="w-full h-10 rounded bg-[#222] opacity-40 mb-4" />
                 <div className="space-y-2">
@@ -1105,8 +1126,8 @@ function KebunVirtualPage() {
               </div>
 
               {/* Tambah Pot Section */}
-              <div className="bg-[#F8F9F6] border-2 border-black rounded-lg shadow-md p-4 w-[30%] flex flex-col max-h-[250px]">
-                <h3 className="text-lg font-bold text-[#3B5D2A] mb-3 sticky top-0 bg-[#F8F9F6] z-10">Tambah Pot</h3>
+              <div className="bg-[#EAF3E2] rounded-lg shadow-md p-4 w-[30%] flex flex-col max-h-[250px]">
+                <h3 className="text-lg font-bold text-[#3B5D2A] mb-3 sticky top-0 bg-[#EAF3E2] z-10">Tambah Pot</h3>
                 <div className="overflow-y-auto flex-1 pr-2">
                   <div className="grid grid-cols-3 gap-3 pb-2">
                     {POT_SHAPES.map((pot) => (

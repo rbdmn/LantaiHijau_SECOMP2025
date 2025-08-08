@@ -402,8 +402,8 @@ export default function HasilPanenPage() {
               
               <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto pr-2">
                 {incompleteItems.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    Semua data hasil panen sudah lengkap!
+                  <div className="flex justify-center items-center py-20">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3B5D2A]"></div>
                   </div>
                 ) : (
                   incompleteItems.map((item) => (
@@ -441,27 +441,53 @@ export default function HasilPanenPage() {
             
             {/* Right: Form Panen */}
             <div className="w-full md:w-[400px]">
-              <div className="bg-[#EAF5E2] border border-[#B7C9A6] rounded-xl p-8 flex flex-col gap-4" style={{ boxShadow: '2px 2px 4px #b7c9a6' }}>
+              <div className="bg-[#EAF5E2] border border-[#B7C9A6] rounded-xl p-8 flex flex-col gap-10" style={{ boxShadow: '2px 2px 4px #b7c9a6' }}>
                 <h2 className="text-[#3B5D2A] text-2xl font-bold text-center mb-2" style={{ fontFamily: 'inherit' }}>
                   Form Panen
                 </h2>
                 <form onSubmit={handleFormSubmit} className="flex flex-col gap-3">
-                  <input 
-                    name="nama" 
-                    value={form.nama} 
-                    onChange={handleFormChange} 
-                    placeholder="Nama" 
-                    className="w-full px-3 py-2 border rounded-md bg-white" 
-                    readOnly 
-                  />
-                  <input 
-                    name="tanggal" 
-                    value={form.tanggal} 
-                    onChange={handleFormChange} 
-                    placeholder="Tanggal" 
-                    className="w-full px-3 py-2 border rounded-md bg-white" 
-                    readOnly 
-                  />
+                  {selectedIncomplete.length <= 1 ? (
+                    <>
+                      <input 
+                        name="nama" 
+                        value={form.nama} 
+                        onChange={handleFormChange} 
+                        placeholder="Nama" 
+                        className="w-full px-3 py-2 border rounded-md bg-white" 
+                        readOnly 
+                      />
+                      <input 
+                        name="tanggal" 
+                        value={form.tanggal} 
+                        onChange={handleFormChange} 
+                        placeholder="Tanggal" 
+                        className="w-full px-3 py-2 border rounded-md bg-white" 
+                        readOnly 
+                      />
+                    </>
+                  ) : (
+                    <div className="flex flex-row gap-2 overflow-x-auto pb-2">
+                      {selectedIncomplete.map(id => {
+                        const item = panen.find(p => p.id === id);
+                        if (!item) return null;
+                        return (
+                          <div key={id} className="relative bg-white border border-[#B7C9A6] rounded-lg px-3 py-2 min-w-[120px] flex flex-col items-center mr-2 shadow">
+                            <button
+                              type="button"
+                              style={{ position: 'absolute', top: 10, right: 0, transform: 'translate(50%,-50%)', zIndex: 2 }}
+                              className="bg-[#FF0000] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow"
+                              onClick={() => handleSelectIncomplete(id)}
+                              title="Batalkan pilihan"
+                            >
+                              x
+                            </button>
+                            <div className="text-[#3B5D2A] font-semibold text-sm text-center truncate max-w-[90px]">{item.nama}</div>
+                            <div className="text-xs text-gray-600 text-center mt-1">{item.tanggal}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                   <input 
                     name="kuantitas" 
                     value={form.kuantitas} 
@@ -624,8 +650,8 @@ export default function HasilPanenPage() {
             ))}
             
             {completeItems.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                Belum ada data hasil panen yang lengkap.
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3B5D2A]"></div>
               </div>
             )}
           </div>

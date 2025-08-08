@@ -3,8 +3,32 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavbarUtama from "../../../components/navigation/navbar_utama";
 import Sidebar from "../../../components/navigation/sidebar";
+import Link from 'next/link';
+import { FaPlusCircle } from "react-icons/fa";
 
 export default function DashboardPage() {
+  // Map id_tanaman ke nama_tanaman
+  const [tanamanMap, setTanamanMap] = useState<{[id: number]: string}>({});
+
+  // Fetch semua tanaman dan simpan di tanamanMap
+  useEffect(() => {
+    const fetchTanamanOptions = async () => {
+      try {
+        const res = await fetch('http://localhost:8000/api/tanaman');
+        const data = await res.json();
+        // data bisa array atau {data: array}
+        const list = Array.isArray(data) ? data : data.data;
+        const map: {[id: number]: string} = {};
+        list.forEach((tanaman: any) => {
+          map[tanaman.id] = tanaman.nama_tanaman;
+        });
+        setTanamanMap(map);
+      } catch (err) {
+        // ignore error
+      }
+    };
+    fetchTanamanOptions();
+  }, []);
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ nama: "", panjang: "", lebar: "" });
@@ -12,37 +36,65 @@ export default function DashboardPage() {
   const [userId, setUserId] = useState<number|null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [hasilPanen, setHasilPanen] = useState<any[]>([]);
+  const [totalPenghematan, setTotalPenghematan] = useState<number>(0);
 
-  // Fetch user info and kebun list
+  const calculatePenghematan = (panen: any) => {
+  if (!panen.kuantitas_panen || !panen.harga_tanam || !panen.tanaman?.rata_harga) return 0;
+  const kuantitasKg = panen.kuantitas_panen / 1000; // Convert gram to kg
+  return Math.max(0, (panen.tanaman.rata_harga - panen.harga_tanam) * kuantitasKg);
+  };
+
   useEffect(() => {
     if (typeof window === "undefined") return;
+
     const token = localStorage.getItem("token");
     if (!token) {
       router.push("/auth/login");
       return;
     }
-    // Get user info
-    fetch("http://localhost:8000/api/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(res => res.json())
-      .then(user => {
-        setUserId(user.id);
-        // Fetch kebun for this user
-        return fetch(`http://localhost:8000/api/kebun?user_id=${user.id}`, {
+
+    // Fungsi async untuk handle fetch
+    const fetchData = async () => {
+      try {
+        // Fetch user info
+        const userRes = await fetch("http://localhost:8000/api/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-      })
-      .then(res => res ? res.json() : [])
-      .then(data => {
-        setKebunList(Array.isArray(data) ? data : []);
+        const user = await userRes.json();
+        setUserId(user.id);
+
+        // Fetch kebun
+        const kebunRes = await fetch(`http://localhost:8000/api/kebun?user_id=${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const kebunData = await kebunRes.json();
+        setKebunList(Array.isArray(kebunData) ? kebunData : []);
+
+        // Fetch hasil panen
+        const panenRes = await fetch("http://localhost:8000/api/hasil-panen", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const panenData = await panenRes.json();
+
+        // Filter hasil panen yang lengkap
+        const completePanen = panenData.data.filter((p: any) =>
+          p.kuantitas_panen !== null && p.harga_tanam !== null
+        );
+        setHasilPanen(completePanen);
+        setTotalPenghematan(panenData.total_penghematan || 0);
+
         setLoading(false);
-      })
-      .catch(() => {
-        setError("Gagal mengambil data user/kebun.");
+      } catch (err) {
+        console.error("Gagal mengambil data:", err);
+        setError("Gagal mengambil data user/kebun/panen.");
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, [router, showModal]);
+
 
   // Handle add kebun
   const handleAddKebun = async (e: React.FormEvent) => {
@@ -167,15 +219,17 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-[#3B5D2A]">Kebun Virtual</h2>
                 <button
-                  className="w-8 h-8 flex items-center justify-center rounded-full border border-[#3B5D2A] text-[#3B5D2A] hover:bg-[#dbeed2]"
                   onClick={() => setShowModal(true)}
+                  className="text-[#3B5D2A] text-2xl hover:text-green-800 transition-colors"
                 >
-                  <span className="text-2xl leading-none">+</span>
+                  <FaPlusCircle />
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {loading ? (
-                  <div className="text-[#3B5D2A]">Memuat kebun...</div>
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3B5D2A]"></div>
+                  </div>
                 ) : error ? (
                   <div className="text-red-500">{error}</div>
                 ) : kebunList.length === 0 ? (
@@ -208,118 +262,127 @@ export default function DashboardPage() {
                   })}
                 </span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                {kebunList.flatMap(kebun => {
-                  console.log('Processing kebun:', kebun.nama_kebun, 'Grid data:', kebun.grid_data);
-                  
-                  if (!kebun.grid_data) {
-                    console.log('No grid data for kebun:', kebun.nama_kebun);
-                    return [];
-                  }
-                  
-                  let gridData;
-                  try {
-                    gridData = typeof kebun.grid_data === 'string' ? 
-                      JSON.parse(kebun.grid_data) : kebun.grid_data;
-                    console.log('Parsed grid data for kebun:', kebun.nama_kebun, gridData);
-                  } catch (e) {
-                    console.error('Error parsing grid data for kebun:', kebun.nama_kebun, e);
-                    return [];
-                  }
 
-                  if (!gridData.tanaman || !Array.isArray(gridData.tanaman)) {
-                    console.log('No tanaman array found for kebun:', kebun.nama_kebun, gridData);
-                    return [];
-                  }
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3B5D2A]"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                  {kebunList.flatMap(kebun => {
+                    if (!kebun.grid_data) return [];
 
-                  console.log('Found tanaman array for kebun:', kebun.nama_kebun, 'Count:', gridData.tanaman.length);
+                    let gridData;
+                    try {
+                      gridData = typeof kebun.grid_data === 'string'
+                        ? JSON.parse(kebun.grid_data)
+                        : kebun.grid_data;
+                    } catch (e) {
+                      console.error('Error parsing grid data for kebun:', kebun.nama_kebun, e);
+                      return [];
+                    }
 
-                  return gridData.tanaman
-                    .map((tanaman: any, index: number) => {
-                      console.log('Processing tanaman:', index, tanaman);
-                      
-                      // Untuk sementara, kita gunakan tanggal hari ini sebagai tanggal tanam jika tidak ada
-                      const tanggalTanam = new Date();
-                      const today = new Date();
-                      const daysSincePlanting = Math.floor(
-                        (today.getTime() - tanggalTanam.getTime()) / (1000 * 60 * 60 * 24)
-                      );
-                      
-                      console.log('Tanaman details:', {
-                        kebun: kebun.nama_kebun,
-                        index,
-                        tanggalTanam,
-                        daysSincePlanting,
-                        needsWatering: daysSincePlanting % 2 === 0
-                      });
-                      
-                      // Logika untuk menentukan apakah tanaman perlu disiram
-                      const needsWatering = daysSincePlanting % 2 === 0;
-                      
-                      if (!needsWatering) {
-                        console.log('Tanaman does not need watering:', index);
-                        return null;
-                      }
-                      
-                      return (
-                        <div key={`${kebun.id}-${index}`} className="flex items-center gap-3 p-2 bg-[#F8F9F6] rounded-lg">
-                          {/* <input type="checkbox" className="w-5 h-5 accent-[#3B5D2A]" /> */}
-                          <div>
-                            <div className="font-semibold text-[#3B5D2A] leading-tight">{kebun.nama_kebun}</div>
-                            <div className="text-sm text-[#222] leading-tight">
-                              Siram tanaman {tanaman.nama_tanaman || 'di posisi ' + (tanaman.posisi_x + 1) + ',' + (tanaman.posisi_y + 1)}
+                    if (!gridData.tanaman || !Array.isArray(gridData.tanaman)) return [];
+
+                    return gridData.tanaman
+                      .map((tanaman: any, index: number) => {
+                        const tanggalTanam = new Date(); // ini bisa diganti kalau kamu punya data tanggal_tanam asli
+                        const today = new Date();
+                        const daysSincePlanting = Math.floor(
+                          (today.getTime() - tanggalTanam.getTime()) / (1000 * 60 * 60 * 24)
+                        );
+                        const needsWatering = daysSincePlanting % 2 === 0;
+                        if (!needsWatering) return null;
+
+                        const namaTanaman = tanamanMap[tanaman.id_tanaman] || '-';
+
+                        return (
+                          <div key={`${kebun.id}-${index}`} className="flex items-center gap-3 p-2 bg-[#F8F9F6] rounded-lg">
+                            <div>
+                              <div className="font-semibold text-[#3B5D2A] leading-tight">{kebun.nama_kebun}</div>
+                              <div className="text-sm text-[#222] leading-tight">
+                                Siram tanaman <span className="font-bold text-[#4B6A3D]">{namaTanaman}</span>
+                                {tanaman.posisi_x !== undefined && tanaman.posisi_y !== undefined
+                                  ? ` di posisi ${tanaman.posisi_x + 1},${tanaman.posisi_y + 1}`
+                                  : ''}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })
-                    .filter(Boolean);
-                })}
-              </div>
+                        );
+                      })
+                      .filter(Boolean);
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
           {/* Hasil Panen */}
           <div className="bg-[#EAF3E2] rounded-xl shadow p-6 w-full">
-            <h2 className="text-xl font-bold text-[#3B5D2A] mb-4">Hasil Panen</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#3B5D2A]">Hasil Panen</h2>
+              <Link href="/user/hasil_panen" className="text-[#3B5D2A] text-sm hover:underline">Lihat Semua</Link>
+            </div>
             <div className="flex flex-col gap-6">
-              {[1,2].map((n) => (
-                <div key={n} className="bg-white rounded-lg shadow p-4 flex flex-col md:flex-row items-start gap-4 border border-[#D6E5C2]">
-                  <div className="flex flex-col items-center w-32 min-w-[100px]">
-                    <span className="text-[#3B5D2A] text-sm mt-2">Tanaman Cabai</span>
-                  </div>
-                  <div className="flex-1 overflow-x-auto">
-                    <table className="w-full text-sm">
+              {hasilPanen?.slice(0, 2).map((panen) => {
+                // Foto tanaman
+                let imgSrc = '';
+                if (panen.foto_tanaman) {
+                  if (panen.foto_tanaman.startsWith('http')) {
+                    imgSrc = panen.foto_tanaman;
+                  } else {
+                    imgSrc = `http://localhost:8000/uploads/${panen.foto_tanaman}`;
+                  }
+                } else {
+                  console.log("Image src:", imgSrc);
+                  imgSrc = '/cabai.svg'; // fallback hanya jika tidak ada foto sama sekali
+                }
+                return (
+                  <div key={panen.id} className="bg-white rounded-lg shadow p-0 border border-[#D6E5C2]">
+                    <table className="w-full text-sm rounded-lg overflow-hidden">
                       <thead>
-                        <tr className="text-[#3B5D2A] font-semibold">
-                          <th className="text-left pb-2 px-3 border-b border-r border-[#D6E5C2]">Tanggal</th>
-                          <th className="text-left pb-2 px-3 border-b border-r border-[#D6E5C2]">Kuantitas Panen</th>
-                          <th className="text-left pb-2 px-3 border-b border-r border-[#D6E5C2]">Harga Tanam</th>
-                          <th className="text-left pb-2 px-3 border-b">Rata-Rata Harga Pasar</th>
+                        <tr className="bg-[#F8F9F6] text-[#3B5D2A] font-semibold">
+                          <th className="text-center border-r border-[#D6E5C2]">Nama & Foto</th>
+                          <th className="text-center border-r border-[#D6E5C2]">Tanggal</th>
+                          <th className="text-center border-r border-[#D6E5C2]">Kuantitas Panen</th>
+                          <th className="text-center border-r border-[#D6E5C2]">Harga Tanam</th>
+                          <th className="text-center border-r border-[#D6E5C2]">Rata-Rata Harga Pasar</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td className="py-2 px-3 border-b border-r border-[#D6E5C2]">18/12/2025</td>
-                          <td className="py-2 px-3 border-b border-r border-[#D6E5C2]">2090 gram</td>
-                          <td className="py-2 px-3 border-b border-r border-[#D6E5C2]">Rp. 19.000</td>
-                          <td className="py-2 px-3 border-b">Rp. 30.000/Kg</td>
+                          <td className="text-center align-middle border-r border-[#D6E5C2]">
+                            <div className="flex flex-col items-center justify-center">
+                              <img src={imgSrc} alt={panen.nama_tanaman || 'Tanaman'} width={40} height={40} className="object-contain mb-1" style={{ borderRadius: '6px', background: '#F8F9F6', border: '1px solid #D6E5C2' }} />
+                              <span className="text-[#3B5D2A] text-sm font-semibold">{panen.nama_tanaman || 'Tanaman'}</span>
+                            </div>
+                          </td>
+                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">{panen.tanggal ? new Date(panen.tanggal).toISOString().slice(0, 10) : '-'}</td>
+                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">{panen.kuantitas_panen} gram</td>
+                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">Rp. {panen.harga_tanam?.toLocaleString('id-ID')}</td>
+                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">{panen.tanaman?.rata_harga ? `Rp. ${Number(panen.tanaman.rata_harga).toLocaleString('id-ID')}/Kg` : '-'}</td>
+                          
                         </tr>
                         <tr>
-                          <td className="py-2 px-3 border-r border-[#D6E5C2] font-semibold text-[#3B5D2A]">Total Penghematan:</td>
-                          <td className="py-2 px-3 border-r border-[#D6E5C2]" />
-                          <td className="py-2 px-3 border-r border-[#D6E5C2]" />
-                          <td className="py-2 px-3 font-semibold text-[#3B5D2A]">Rp43.700</td>
+                          <td colSpan={7} className="bg-[#F8F9F6] text-[#3B5D2A] text-right px-4 py-2 font-semibold border-t border-[#D6E5C2]">
+                            Total Penghematan : <span className="text-green-700 font-bold">Rp. {calculatePenghematan(panen).toLocaleString('id-ID')}</span>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
-                </div>
-              ))}
+                );
+              })}
+              {!hasilPanen && <div className="text-center text-[#3B5D2A]">Memuat data...</div>}
+              {hasilPanen?.length === 0 && (
+                <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3B5D2A]"></div>
+                  </div>
+              )}
             </div>
             <div className="flex justify-between items-center mt-6 bg-[#3B5D2A] text-white rounded shadow px-6 py-3 text-lg font-semibold">
               <span>Total Keseluruhan Penghematan :</span>
-              <span>Rp. 80.860</span>
+              <span>Rp. {totalPenghematan?.toLocaleString('id-ID') || 0}</span>
             </div>
           </div>
         </div>
