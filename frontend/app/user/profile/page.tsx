@@ -147,12 +147,11 @@ export default function ProfilePage() {
               required
             />
             <button
-              type="submit"
-              className="w-full bg-[#304529] text-white py-3 rounded-lg font-semibold hover:bg-[#5C7D5B] transition"
-              disabled={loading}
-            >
-              Update
-            </button>
+                  onClick={() => { localStorage.removeItem("token"); window.location.href = "/auth/login"; }}
+                  className="border-2 border-[#5C7D5B] text-[#5C7D5B] px-6 py-2 rounded-full font-medium hover:bg-[#5C7D5B] hover:text-white transition-colors duration-200 ml-2"
+                >
+                  Logout
+                </button>
           </form>
           {success && <div className="mt-4 text-green-700">{success}</div>}
           {error && <div className="mt-4 text-red-600">{error}</div>}

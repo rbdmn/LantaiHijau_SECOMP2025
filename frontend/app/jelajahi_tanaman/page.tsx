@@ -42,7 +42,7 @@ export default function JelajahiTanamanPage() {
   const fetchTanaman = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/tanaman`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/tanaman`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
