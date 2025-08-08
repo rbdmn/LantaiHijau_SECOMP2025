@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\KebunController;
 use App\Http\Controllers\HasilPanenController;
+use App\Http\Controllers\KoleksiTanamanController; 
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -18,8 +19,6 @@ Route::get('/tanaman/{id}', [TanamanController::class, 'show']);
 
 // Get tanaman options for dropdown (public access for form)
 Route::get('/tanaman-options', [JurnalController::class, 'getTanamanOptions']);
-
-
 
 // Auth routes
 Route::post('/register', [UserController::class, 'register']);
@@ -37,7 +36,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/jurnal/{id}', [JurnalController::class, 'update']);
     Route::patch('/jurnal/{id}', [JurnalController::class, 'update']);
     Route::delete('/jurnal/{id}', [JurnalController::class, 'destroy']);
+
+    // Koleksi Tanaman routes (TAMBAHKAN INI)
+    Route::post('/koleksi-tanaman', [KoleksiTanamanController::class, 'store']);
+    Route::get('/koleksi-tanaman', [KoleksiTanamanController::class, 'index']);
+    Route::delete('/koleksi-tanaman/{id}', [KoleksiTanamanController::class, 'destroy']);
+    Route::get('/koleksi-tanaman/check/{tanamanId}', [KoleksiTanamanController::class, 'checkCollection']);
 });
+
+
 Route::middleware('auth:sanctum')->get('/me', [UserController::class, 'me']);
 
 // Hasil Panen routes
