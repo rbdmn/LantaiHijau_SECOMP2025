@@ -10,7 +10,7 @@ const articles = [
     date: 'Monday 31 August 2021',
     image: '/cabai.jpg',
     excerpt:
-      'Mauris egestas turpis. Vitae pulvinar lobortis vel ut at. Sed facilisis vestibulum...',
+      'Musim hujan sering kali menjadi tantangan bagi para petani maupun penghobi tanaman cabai.Curah hujan yang tinggi dapat menyebabkan tanaman menjadi rentan terhadap serangan penyakit dan kerusakan akar.',
   },
   {
     id: '2',
@@ -18,7 +18,7 @@ const articles = [
     date: 'Monday 17 August 2022',
     image: '/sawi.jpg',
     excerpt:
-      'Mauris egestas turpis. Vitae pulvinar lobortis vel ut at. Sed facilisis vestibulum...',
+      'Di tengah keterbatasan lahan di perkotaan, seorang pemuda asal Bandung berhasil membuktikan bahwa menanam sayuran sendiri di rumah bukanlah hal yang mustahil.',
   },
   {
     id: '3',
@@ -26,7 +26,7 @@ const articles = [
     date: 'Monday 18 August 2021',
     image: '/bawang.jpg',
     excerpt:
-      'Mauris egestas turpis. Vitae pulvinar lobortis vel ut at. Sed facilisis vestibulum...',
+      'Menanam bawang di rumah kini semakin populer, terutama bagi mereka yang ingin mandiri dalam kebutuhan dapur harian. Selain mudah ditanam, bawang merah maupun bawang putih bisa tumbuh subur di pot kecil atau lahan sempit sekalipun.',
   },
   // Tambahkan lebih banyak artikel di sini...
 ];

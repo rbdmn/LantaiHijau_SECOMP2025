@@ -7,6 +7,9 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
+
+import { useRouter } from "next/navigation";
+
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     email: "",
@@ -14,14 +17,49 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Register attempt:", formData);
-    // Validasi tambahan bisa ditambahkan di sini
+    setError("");
+    setSuccess("");
+    if (formData.password !== formData.confirmPassword) {
+      setError("Password dan konfirmasi password tidak sama");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:8000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          username: formData.username,
+          password: formData.password
+        }),
+      });
+      const data = await res.json();
+      console.log(data);
+      if (!res.ok) {
+        // Laravel validation errors are in data.errors
+        if (data.errors) {
+          setError(Object.values(data.errors).flat().join(". "));
+        } else {
+          setError(data.message || "Registrasi gagal");
+        }
+      } else {
+        setSuccess("Registrasi berhasil! Mengarahkan ke halaman login...");
+        setTimeout(() => router.push("/auth/login"), 1200);
+      }
+    } catch (err) {
+      setError("Gagal terhubung ke server");
+    }
+    setLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,6 +160,8 @@ export default function RegisterPage() {
               Masuk di sini
             </Link>
           </p>
+          {error && <div className="mt-4 text-red-600">{error}</div>}
+          {success && <div className="mt-4 text-green-600">{success}</div>}
         </div>
       </div>
     </main>

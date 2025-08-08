@@ -1,17 +1,32 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-
 use App\Models\Tanaman;
+use Illuminate\Http\Request;
 
 class TanamanController extends Controller
 {
-    // GET /api/tanaman
+    public function show($id)
+    {
+        try {
+            $tanaman = Tanaman::with('panduan')->findOrFail($id);
+            
+            return response()->json($tanaman);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Tanaman tidak ditemukan'
+            ], 404);
+        }
+    }
+
     public function index()
     {
-        $tanaman = Tanaman::all();
-        return response()->json($tanaman);
+        try {
+            $tanaman = Tanaman::all();
+            return response()->json($tanaman);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal mengambil data tanaman'
+            ], 500);
+        }
     }
 }
