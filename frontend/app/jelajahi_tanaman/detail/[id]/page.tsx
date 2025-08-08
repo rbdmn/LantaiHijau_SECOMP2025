@@ -6,6 +6,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import NavbarUtama from "../../../../components/navigation/navbar_utama";
 import { FaRegLightbulb } from "react-icons/fa6";
+import { FaArrowLeft } from "react-icons/fa";
 
 interface PanduanTanaman {
   id: number;
@@ -295,7 +296,7 @@ export default function DetailTanaman() {
       {/* Back Arrow */}
       <div className="px-8 pt-6">
         <button onClick={() => router.back()} className="text-[#3B5D2A] text-3xl font-bold rounded-full hover:bg-[#F0F5ED] w-10 h-10 flex items-center justify-center mt-[60px]">
-          <svg width="28" height="28" fill="none" stroke="#3B5D2A" strokeWidth="3" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+          <FaArrowLeft size={28} color="#3B5D2A" />
         </button>
       </div>
 

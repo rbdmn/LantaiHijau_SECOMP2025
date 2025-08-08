@@ -10,26 +10,55 @@ export default function LandingPage() {
   const [slide, setSlide] = useState(0);
 
   const slides = [
-    {
-      title: "Selamat Datang",
-      desc: `Website untuk kamu yang ingin mulai berkebun di rumah, meski dengan lahan yang terbatas.
-            Temukan tips, panduan, dan inspirasi untuk menciptakan kebun hijau dalam ruang sempit lebih segar, lebih sehat, lebih hijau!`,
-      img: "/tanaman.png",
-      buttonText: "Mulai Sekarang",
-      buttonLink: "/auth/register",
-    },
-    {
-      title: "Tentang Kami",
-      desc: `Kami adalah komunitas berkebun digital yang ingin membantu kamu menghijaukan ruang kecilmu. 
-              Di Lantai Hijau, kami percaya semua orang bisa berkebun, mulai dari ruang dapur hingga balkon apartemen.`,
-      img: "/logo_landing_page.png",
-      buttonText: "Pelajari Lebih Lanjut",
-      buttonLink: "#tentang",
-    }
-  ];
+  {
+    title: "Selamat Datang",
+    desc: `Website untuk kamu yang ingin mulai berkebun di rumah, meski dengan lahan yang terbatas.
+          Temukan tips, panduan, dan inspirasi untuk menciptakan kebun hijau dalam ruang sempit lebih segar, lebih sehat, lebih hijau!`,
+    img: "/tanaman.png",
+    position: "right-0 bottom-0 top-0",
+    imgWidth: 800,
+    imgHeight: 800,
+    buttonText: "Mulai Sekarang",
+    buttonLink: "/auth/register",
+  },
+  {
+    title: "Tentang Kami",
+    desc: `Lantai Hijau adalah platform edukatif yang hadir untuk membantumu berkebun di ruang terbatas. 
+    Kami percaya bahwa siapa pun bisa menanam, di mana pun, bahkan di tengah padatnya perkotaan.`,
+    img: "/petani.png",
+    position: "right-0 bottom-0 top-[-40]",
+    imgWidth: 1000,
+    imgHeight: 1000,
+  },
+  {
+    title: "Fitur Unggulan",
+    desc: `Kebun Virtual untuk memantau tanamanmu secara interaktif.
+            Jurnal untuk mencatat perkembangan harian.
+            Hasil Panen untuk merekap dan membagikan pencapaianmu.`,
+    position: "right-50 bottom-20 top-auto",
+    img: "/fitur.png",
+    imgWidth: 450,
+    imgHeight: 450
+  }
+];
 
-  const nextSlide = () => setSlide((slide + 1) % slides.length);
-  const prevSlide = () => setSlide((slide - 1 + slides.length) % slides.length);
+// Fungsi manual
+  const nextSlide = () => {
+    setSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  // Otomatis berganti
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSlide((prev) => (prev + 1) % slides.length);
+    }, 5000); // ganti setiap 5 detik
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Fetch tanaman from API
   const [tanamanPangan, setTanamanPangan] = useState<any[]>([]);
@@ -39,12 +68,12 @@ export default function LandingPage() {
       .then((data) => setTanamanPangan(data.slice(0, 9))) // show max 9 for grid
       .catch(() => setTanamanPangan([]));
   }, []);
+
   
 
   return (
     <main className="bg-white min-h-screen font-sans">
       <NavbarUtama />
-      
       
       {/* Hero Carousel Section */}
      <section className="relative w-full h-[600px] flex items-center justify-center px-6 md:px-20 bg-gradient-to-t from-[#304529] to-[#557C49] mt-16 overflow-hidden">
@@ -111,52 +140,55 @@ export default function LandingPage() {
 
             <h1 className="text-5xl font-bold text-white mb-6">{slides[slide].title}</h1>
             <p className="text-white mb-8 text-lg leading-relaxed">{slides[slide].desc}</p>
-            <Link href={slides[slide].buttonLink}>
-              <button className="bg-[#E6F0E6] text-[#5C7D5B] px-8 py-3 rounded-full font-medium shadow-lg hover:bg-[#D4E8D4] transition-colors duration-200">
-                {slides[slide].buttonText}
-              </button>
-            </Link>
+            {slides[slide].buttonText && slides[slide].buttonLink && (
+              <Link href={slides[slide].buttonLink}>
+                <button className="bg-[#E6F0E6] text-[#5C7D5B] px-8 py-3 rounded-full font-medium shadow-lg hover:bg-[#D4E8D4] transition-colors duration-200">
+                  {slides[slide].buttonText}
+                </button>
+              </Link>
+            )}
+
           </div>
 
-          {/* Gambar utama */}
-        <div className="absolute bottom-0 right-20 top-0">
-            <Image
-              src={slides[slide].img}
-              alt="Hero Gambar"
-              width={700}
-              height={700}
-              className="drop-sha10ow-xl"
-            />
-          </div>
+        {/* Gambar utama */}
+        <div
+          className={`absolute transition-all duration-500 ease-in-out ${slides[slide].position}`}
+        >
+          <Image
+            src={slides[slide].img}
+            alt="Hero Gambar"
+            width={slides[slide].imgWidth}
+            height={slides[slide].imgHeight}
+            className="drop-shadow-xl transition-all duration-500 ease-in-out"
+          />
+        </div>
         </div>
 
         {/* Navigasi slide */}
-<button 
-  onClick={prevSlide}
-  className="absolute left-12 top-1/2 -translate-y-1/2 text-white 
-             bg-white/20 p-3 rounded-full backdrop-blur-sm
-             hover:bg-white/30 hover:scale-110 hover:shadow-lg 
-             transition-all duration-300 z-20"
->
-  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-  </svg>
-</button>
+        <button 
+          onClick={prevSlide}
+          className="absolute left-12 top-1/2 -translate-y-1/2 text-white 
+                    bg-white/20 p-3 rounded-full backdrop-blur-sm
+                    hover:bg-white/30 hover:scale-110 hover:shadow-lg 
+                    transition-all duration-300 z-20"
+        >
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
 
-<button 
-  onClick={nextSlide}
-  className="absolute right-12 top-1/2 -translate-y-1/2 text-white 
-             bg-white/20 p-3 rounded-full backdrop-blur-sm
-             hover:bg-white/30 hover:scale-110 hover:shadow-lg 
-             transition-all duration-300 z-20"
->
-  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-  </svg>
-</button>
-
+        <button 
+          onClick={nextSlide}
+          className="absolute right-12 top-1/2 -translate-y-1/2 text-white 
+                    bg-white/20 p-3 rounded-full backdrop-blur-sm
+                    hover:bg-white/30 hover:scale-110 hover:shadow-lg 
+                    transition-all duration-300 z-20"
+        >
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </section>
-
 
       {/* Jelajahi Tanaman Pangan */}
       <div className="max-w-6xl mx-auto px-6 md:px-20 py-16">
@@ -167,7 +199,7 @@ export default function LandingPage() {
       </div>
       <div className="grid grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
       {tanamanPangan.length === 0 ? (
-        <div className="col-span-3 text-center text-gray-400">Belum ada data tanaman.</div>
+      <div className="col-span-3 text-center text-gray-400">Belum ada data tanaman.</div>
       ) : (
         tanamanPangan.map((tanaman, i) => (
           <Link key={i} href={`/jelajahi_tanaman/detail/${tanaman.id}`} passHref>
@@ -185,9 +217,16 @@ export default function LandingPage() {
               />
               <span className="text-[#3C4F3A] font-semibold text-lg">{tanaman.nama_tanaman}</span>
             </div>
-          </Link>
-        ))
+          </Link> 
+        ))  
       )}
+    </div>
+    <div className="flex justify-center mb-16">
+            <Link href="/jelajahi_tanaman">
+              <button className="bg-[#E6F0E6] text-[#5C7D5B] px-8 py-3 rounded-full font-medium shadow-lg hover:bg-[#D4E8D4] transition-colors duration-200">
+                Lihat Semua
+              </button>
+            </Link>
     </div>
 
       {/* Tentang Kita */}

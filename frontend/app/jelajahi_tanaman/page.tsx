@@ -362,7 +362,7 @@ export default function JelajahiTanamanPage() {
               {filteredList.map((tanaman) => (
                 <Link key={tanaman.id} href={`/jelajahi_tanaman/detail/${tanaman.id}`}>
                   <div className="bg-[#E6EDDD] rounded-xl shadow p-4 flex flex-col items-center border hover:scale-105 transition-transform cursor-pointer">
-                    <div className="w-[180px] h-[180px] relative">
+                    <div className="w-[300px] h-[300px] relative">
                       <Image 
                         src={getImageUrl(tanaman.foto_tanaman)} 
                         alt={tanaman.nama_tanaman} 
@@ -383,7 +383,7 @@ export default function JelajahiTanamanPage() {
                       }
                     </div>
                     <div className="mt-4 bg-[#3B5D2A] text-white rounded px-4 py-1 text-base font-medium">
-                      Rp. {tanaman.rata_harga.toLocaleString("id-ID")}
+                      Rp. {tanaman.rata_harga.toLocaleString("id-ID")}/Kg
                     </div>
                     <div className="flex justify-center mt-4">
                       {Array.from({ length: tanaman.level_kesulitan }).map((_, i) => (

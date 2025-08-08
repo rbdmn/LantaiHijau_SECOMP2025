@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect} from "react";
-import { FaRegUserCircle } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 import React from 'react';
 
 export default function NavbarUtama() {
@@ -58,7 +58,7 @@ export default function NavbarUtama() {
             {isLoggedIn ? (
               <>
                 <Link href="/user/profile" className="flex items-center justify-center w-15 h-15">
-                  <FaRegUserCircle className="text-[#5C7D5B] text-4xl" />
+                  <FaUserCircle className="text-[#5C7D5B] text-4xl" />
                 </Link>
                 <button
                   onClick={() => { localStorage.removeItem("token"); window.location.href = "/auth/login"; }}
