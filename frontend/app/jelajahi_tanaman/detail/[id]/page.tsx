@@ -63,7 +63,7 @@ export default function DetailTanaman() {
   const fetchTanamanDetail = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/tanaman/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/tanaman/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ export default function DetailTanaman() {
 
   const fetchRekomendasiTanaman = async () => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/tanaman`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/tanaman`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -363,7 +363,6 @@ export default function DetailTanaman() {
                 <span className="text-[#3B5D2A] text-base font-bold text-center leading-tight">{tanaman.musim_panen}</span>
             </div>
             </div>
-            // Update tampilan tombol di JSX
             <button
               className={`w-full py-2 rounded-md font-semibold text-lg shadow transition mt-2 flex items-center justify-center gap-2 relative ${
                 isInCollection 

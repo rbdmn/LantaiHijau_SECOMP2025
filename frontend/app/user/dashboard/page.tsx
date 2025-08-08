@@ -5,6 +5,7 @@ import NavbarUtama from "../../../components/navigation/navbar_utama";
 import Sidebar from "../../../components/navigation/sidebar";
 import Link from 'next/link';
 import { FaPlusCircle } from "react-icons/fa";
+import { MdKeyboardArrowRight } from "react-icons/md";
 
 export default function DashboardPage() {
   // Map id_tanaman ke nama_tanaman
@@ -40,9 +41,12 @@ export default function DashboardPage() {
   const [totalPenghematan, setTotalPenghematan] = useState<number>(0);
 
   const calculatePenghematan = (panen: any) => {
-  if (!panen.kuantitas_panen || !panen.harga_tanam || !panen.tanaman?.rata_harga) return 0;
-  const kuantitasKg = panen.kuantitas_panen / 1000; // Convert gram to kg
-  return Math.max(0, (panen.tanaman.rata_harga - panen.harga_tanam) * kuantitasKg);
+    if (!panen.kuantitas_panen || !panen.harga_tanam || !panen.tanaman?.rata_harga) return 0;
+    
+    const hargaPasarPerGram = panen.tanaman.rata_harga / 1000; // dari per Kg → per gram
+    const totalNilaiPasar = hargaPasarPerGram * panen.kuantitas_panen;
+    
+    return totalNilaiPasar - panen.harga_tanam;
   };
 
   useEffect(() => {
@@ -242,7 +246,9 @@ export default function DashboardPage() {
                       onClick={() => router.push(`/user/kebun_virtual/${kebun.id}`)}
                     >
                       <span className="text-sm text-[#3B5D2A] font-medium">{kebun.nama_kebun}</span>
-                      <span className="text-[#3B5D2A] text-lg">&gt;</span>
+                      <span className="text-[#3B5D2A] text-lg">
+                        <MdKeyboardArrowRight />
+                        </span>
                     </button>
                   ))
                 )}
@@ -311,7 +317,7 @@ export default function DashboardPage() {
                         );
                       })
                       .filter(Boolean);
-                  })}
+                  }).slice(0, 6)}
                 </div>
               )}
             </div>
@@ -324,8 +330,12 @@ export default function DashboardPage() {
               <Link href="/user/hasil_panen" className="text-[#3B5D2A] text-sm hover:underline">Lihat Semua</Link>
             </div>
             <div className="flex flex-col gap-6">
-              {hasilPanen?.slice(0, 2).map((panen) => {
-                // Foto tanaman
+              {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3B5D2A]"></div>
+              </div>
+            ) : Array.isArray(hasilPanen) && hasilPanen.length > 0 ? (
+              hasilPanen.slice(0, 3).map((panen) => {
                 let imgSrc = '';
                 if (panen.foto_tanaman) {
                   if (panen.foto_tanaman.startsWith('http')) {
@@ -334,8 +344,7 @@ export default function DashboardPage() {
                     imgSrc = `http://localhost:8000/uploads/${panen.foto_tanaman}`;
                   }
                 } else {
-                  console.log("Image src:", imgSrc);
-                  imgSrc = '/cabai.svg'; // fallback hanya jika tidak ada foto sama sekali
+                  imgSrc = '/cabai.svg';
                 }
                 return (
                   <div key={panen.id} className="bg-white rounded-lg shadow p-0 border border-[#D6E5C2]">
@@ -353,32 +362,59 @@ export default function DashboardPage() {
                         <tr>
                           <td className="text-center align-middle border-r border-[#D6E5C2]">
                             <div className="flex flex-col items-center justify-center">
-                              <img src={imgSrc} alt={panen.nama_tanaman || 'Tanaman'} width={40} height={40} className="object-contain mb-1" style={{ borderRadius: '6px', background: '#F8F9F6', border: '1px solid #D6E5C2' }} />
+                              <img
+                                src={imgSrc}
+                                alt={panen.nama_tanaman || 'Tanaman'}
+                                width={40}
+                                height={40}
+                                className="object-contain mb-1"
+                                style={{ borderRadius: '6px', background: '#F8F9F6', border: '1px solid #D6E5C2' }}
+                              />
                               <span className="text-[#3B5D2A] text-sm font-semibold">{panen.nama_tanaman || 'Tanaman'}</span>
                             </div>
                           </td>
-                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">{panen.tanggal ? new Date(panen.tanggal).toISOString().slice(0, 10) : '-'}</td>
-                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">{panen.kuantitas_panen} gram</td>
-                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">Rp. {panen.harga_tanam?.toLocaleString('id-ID')}</td>
-                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">{panen.tanaman?.rata_harga ? `Rp. ${Number(panen.tanaman.rata_harga).toLocaleString('id-ID')}/Kg` : '-'}</td>
-                          
+                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">
+                            {panen.tanggal ? new Date(panen.tanggal).toISOString().slice(0, 10) : '-'}
+                          </td>
+                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">
+                            {panen.kuantitas_panen} gram
+                          </td>
+                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">
+                            Rp. {panen.harga_tanam?.toLocaleString('id-ID')}
+                          </td>
+                          <td className="text-center align-middle border-r border-[#D6E5C2] font-bold">
+                            {panen.tanaman?.rata_harga
+                              ? `Rp. ${Number(panen.tanaman.rata_harga).toLocaleString('id-ID')}/Kg`
+                              : '-'}
+                          </td>
                         </tr>
                         <tr>
-                          <td colSpan={7} className="bg-[#F8F9F6] text-[#3B5D2A] text-right px-4 py-2 font-semibold border-t border-[#D6E5C2]">
-                            Total Penghematan : <span className="text-green-700 font-bold">Rp. {calculatePenghematan(panen).toLocaleString('id-ID')}</span>
+                          <td
+                            colSpan={7}
+                            className="bg-[#F8F9F6] text-[#3B5D2A] text-right px-4 py-2 font-semibold border-t border-[#D6E5C2]"
+                          >
+                            Total Penghematan :{' '}
+                            <span
+                            className={`font-bold px-3 py-1 rounded 
+                              ${panen.penghematan > 0 
+                                ? 'bg-green-600 text-white' 
+                                : panen.penghematan < 0 
+                                  ? 'bg-red-600 text-white' 
+                                  : 'text-[#3B5D2A]'}`}
+                          >
+                            Rp. {calculatePenghematan(panen).toLocaleString('id-ID')}
+                          </span>
                           </td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                 );
-              })}
-              {!hasilPanen && <div className="text-center text-[#3B5D2A]">Memuat data...</div>}
-              {hasilPanen?.length === 0 && (
-                <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3B5D2A]"></div>
-                  </div>
-              )}
+              })
+            ) : (
+              <div className="text-center text-[#3B5D2A] py-8">Anda belum memiliki data hasil panen.</div>
+            )}
+
             </div>
             <div className="flex justify-between items-center mt-6 bg-[#3B5D2A] text-white rounded shadow px-6 py-3 text-lg font-semibold">
               <span>Total Keseluruhan Penghematan :</span>

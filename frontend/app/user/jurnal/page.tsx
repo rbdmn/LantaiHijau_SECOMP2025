@@ -21,6 +21,10 @@ interface TanamanOption {
 }
 
 export default function JurnalPage() {
+  // Toast notification state
+  const [showToast, setShowToast] = useState(false);
+  const [saveNotif, setSaveNotif] = useState("");
+  const [saveNotifType, setSaveNotifType] = useState("");
   const [jurnal, setJurnal] = useState<JurnalEntry[]>([]);
   const [tanamanOptions, setTanamanOptions] = useState<TanamanOption[]>([]);
   const [lastUpdate, setLastUpdate] = useState<string>("");
@@ -29,6 +33,7 @@ export default function JurnalPage() {
   const [editId, setEditId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [tableLoading, setTableLoading] = useState(true); 
   const [kebunList, setKebunList] = useState<any[]>([]);
   const [form, setForm] = useState({
     id_tanaman: "",
@@ -107,40 +112,27 @@ export default function JurnalPage() {
   };
 
   const fetchJurnalData = async () => {
+    setTableLoading(true); // ✅ set loading tabel jadi true sebelum fetch
     try {
-      console.log('Fetching jurnal data...');
-      
       const response = await fetch('http://localhost:8000/api/jurnal', {
         method: 'GET',
         headers: getAuthHeaders(),
       });
-      
-      console.log('Jurnal response status:', response.status);
-      
-      if (response.status === 401) {
-        console.log('Unauthorized response, clearing auth');
-        setIsAuthenticated(false);
-        localStorage.removeItem('token');
-        return;
-      }
 
       const data = await response.json();
-      console.log('Jurnal data response:', data);
-      
       if (data.success) {
         setJurnal(data.data);
         if (data.data.length > 0) {
           setLastUpdate(new Date().toLocaleDateString('id-ID'));
         }
-      } else {
-        console.error('Failed to fetch jurnal:', data.message);
       }
     } catch (error) {
       console.error('Error fetching jurnal:', error);
     } finally {
-      setLoading(false);
+      setTableLoading(false); // ✅ selesai loading tabel
     }
   };
+
 
   const fetchTanamanOptions = async () => {
     try {
@@ -189,34 +181,58 @@ export default function JurnalPage() {
         setEditId(id);
         setShowModal(true);
       } else {
-        alert('Gagal memuat data jurnal: ' + data.message);
+        setSaveNotif('Gagal memuat data jurnal: ' + data.message);
+        setSaveNotifType('error');
+        setShowToast(true);
+        setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
       }
     } catch (error) {
       console.error('Error fetching jurnal for edit:', error);
-      alert('Gagal memuat data jurnal untuk diedit');
+      setSaveNotif('Gagal memuat data jurnal untuk diedit');
+      setSaveNotifType('error');
+      setShowToast(true);
+      setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm("Yakin ingin menghapus jurnal ini?")) {
-      try {
-        const response = await fetch(`http://localhost:8000/api/jurnal/${id}`, {
-          method: 'DELETE',
-          headers: getAuthHeaders(),
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-          setJurnal(jurnal.filter(j => j.id !== id));
-          alert('Jurnal berhasil dihapus');
-        } else {
-          alert('Gagal menghapus jurnal: ' + data.message);
-        }
-      } catch (error) {
-        console.error('Error deleting jurnal:', error);
-        alert('Gagal menghapus jurnal');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+
+  const handleDelete = (id: number) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const response = await fetch(`http://localhost:8000/api/jurnal/${deleteId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setJurnal(jurnal.filter(j => j.id !== deleteId));
+        setSaveNotif('Jurnal berhasil dihapus');
+        setSaveNotifType('success');
+      } else {
+        setSaveNotif('Gagal menghapus jurnal: ' + data.message);
+        setSaveNotifType('error');
       }
+    } catch (error) {
+      console.error('Error deleting jurnal:', error);
+      setSaveNotif('Gagal menghapus jurnal');
+      setSaveNotifType('error');
     }
+    setShowToast(true);
+    setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
+    setShowDeleteModal(false);
+    setDeleteId(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeleteId(null);
   };
 
   const handleAdd = () => {
@@ -258,7 +274,10 @@ export default function JurnalPage() {
     e.preventDefault();
     
     if (!form.id_tanaman || !form.mulai_menanam || !form.tanggal_panen || !form.catatan) {
-      alert('Semua field wajib diisi');
+      setSaveNotif('Semua field wajib diisi');
+      setSaveNotifType('error');
+      setShowToast(true);
+      setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
       return;
     }
 
@@ -355,75 +374,91 @@ export default function JurnalPage() {
       } catch (parseError) {
         console.error('JSON parse error:', parseError);
         console.error('Response was not valid JSON:', responseText);
-        alert('Server returned invalid response. Check console and server logs.');
+        setSaveNotif('Server returned invalid response. Check console and server logs.');
+        setSaveNotifType('error');
+        setShowToast(true);
+        setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
         return;
       }
       
       if (data.success) {
         console.log('SUCCESS: Jurnal saved successfully');
-        
         if (editMode) {
           setJurnal(jurnal.map(j => j.id === editId ? data.data : j));
-          alert('Jurnal berhasil diupdate');
+          setSaveNotif('Jurnal berhasil diupdate');
         } else {
           setJurnal([data.data, ...jurnal]);
-          alert('Jurnal berhasil ditambahkan');
+          setSaveNotif('Jurnal berhasil ditambahkan');
         }
+        setSaveNotifType('success');
+        setShowToast(true);
+        setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
         handleModalClose();
         setLastUpdate(new Date().toLocaleDateString('id-ID'));
       } else {
         console.error('SERVER ERROR:', data);
         let errorMessage = data.message || 'Unknown error';
-        
         if (data.errors) {
           const errorDetails = Object.values(data.errors).flat().join(', ');
           errorMessage += ': ' + errorDetails;
         }
-        
         if (data.debug_info) {
           console.error('Debug info:', data.debug_info);
         }
-        
-        alert('Gagal menyimpan jurnal: ' + errorMessage);
+        setSaveNotif('Gagal menyimpan jurnal: ' + errorMessage);
+        setSaveNotifType('error');
+        setShowToast(true);
+        setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
       }
     } catch (error) {
       console.error('NETWORK ERROR:', error);
+      setSaveNotif('Gagal menyimpan jurnal: Network error');
+      setSaveNotifType('error');
+      setShowToast(true);
+      setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
     }
     
     console.log('=== FRONTEND FORM SUBMIT DEBUG END ===');
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[#F8F9F6] flex items-center justify-center">
-        <div className="text-center p-8 bg-white rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold text-[#3B5D2A] mb-4">Akses Terbatas</h2>
-          <p className="text-gray-600 mb-6">Silakan login terlebih dahulu untuk mengakses jurnal.</p>
-          <button 
-            onClick={() => window.location.href = '/auth/login'}
-            className="bg-[#3B5D2A] text-white px-6 py-2 rounded-lg hover:bg-[#2e4a1f] transition"
-          >
-            Login
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // if (!isAuthenticated) {
+  //   return (
+  //     <div className="min-h-screen bg-[#F8F9F6] flex items-center justify-center">
+  //       <div className="text-center p-8 bg-white rounded-lg shadow-lg">
+  //         <h2 className="text-2xl font-bold text-[#3B5D2A] mb-4">Akses Terbatas</h2>
+  //         <p className="text-gray-600 mb-6">Silakan login terlebih dahulu untuk mengakses jurnal.</p>
+  //         <button 
+  //           onClick={() => window.location.href = '/auth/login'}
+  //           className="bg-[#3B5D2A] text-white px-6 py-2 rounded-lg hover:bg-[#2e4a1f] transition"
+  //         >
+  //           Login
+  //         </button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F8F9F6] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3B5D2A] mx-auto mb-4"></div>
-          <p className="text-[#3B5D2A]">Memuat data jurnal...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen ...">
+  //       {/* Spinner seluruh halaman */}
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-[#F8F9F6] font-sans pl-30">
-      
+      {showToast && (
+        <div className={`fixed top-8 left-1/2 z-[9999] -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-fadeIn ${saveNotifType === 'success' ? 'bg-green-100 border border-green-400 text-green-800' : 'bg-red-100 border border-red-400 text-red-800'}`}
+          style={{ minWidth: 220, maxWidth: 340 }}>
+          {saveNotifType === 'success' ? (
+            <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+          ) : (
+            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          )}
+          <span className="font-semibold text-base">{saveNotif}</span>
+        </div>
+      )}
       <Sidebar kebunList={kebunList} />
       <NavbarUtama />
 
@@ -451,7 +486,11 @@ export default function JurnalPage() {
       {/* Table */}
       <div className="px-8">
         <div className="overflow-x-auto">
-          {jurnal.length === 0 ? (
+          {tableLoading ? (
+            <div className="flex justify-center items-center py-10">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#3B5D2A]"></div>
+            </div>
+          ) : jurnal.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg">
               <p className="text-gray-500 text-lg">Belum ada data jurnal</p>
               <p className="text-gray-400 mt-2">Klik tombol "Tambah" untuk membuat jurnal pertama Anda</p>
@@ -631,6 +670,36 @@ export default function JurnalPage() {
                 {editMode ? 'Update' : 'Submit'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30">
+          <div className="rounded-xl shadow-lg p-8 w-full max-w-sm relative border bg-white bg-opacity-95" style={{minWidth:300}}>
+            <button
+              className="absolute top-4 right-4 text-2xl text-[#3B5D2A] hover:text-red-600 font-bold"
+              onClick={cancelDelete}
+              aria-label="Tutup"
+            >
+              ×
+            </button>
+            <div className="flex flex-col items-center">
+              <svg className="w-12 h-12 text-red-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              <h2 className="text-[#3B5D2A] text-2xl font-bold mb-2 text-center">Konfirmasi Hapus</h2>
+              <p className="text-gray-700 text-center mb-6">Yakin ingin menghapus jurnal ini? Tindakan ini tidak dapat dibatalkan.</p>
+              <div className="flex gap-4 w-full justify-center">
+                <button
+                  onClick={cancelDelete}
+                  className="px-5 py-2 rounded-md bg-gray-300 text-gray-800 font-semibold hover:bg-gray-400 transition"
+                >Batal</button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-5 py-2 rounded-md bg-[#FF0000] text-white font-semibold hover:bg-red-700 transition"
+                >Hapus</button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -31,30 +31,48 @@ export default function Sidebar({ kebunList = [] }: SidebarProps) {
   return (
     <>
       <aside className="fixed top-16 left-0 h-screen w-24 bg-[#4F6E44] shadow-md flex flex-col items-center py-10 space-y-10 z-50">
-        {menu.map((item) => (
-          item.dropdown ? (
-            <button
-              key={item.label}
-              onClick={() => setShowKebunDropdown(!showKebunDropdown)}
-              className="flex flex-col items-center text-white hover:text-gray-200 transition-colors"
-            >
-              {item.icon}
-              <span className="text-xs mt-2 text-center">{item.label}</span>
-            </button>
-          ) : (
+        {menu.map((item) => {
+          let isSelected;
+          if (item.dropdown) {
+            // Selected if dropdown open OR current path is kebun_virtual page
+            isSelected = showKebunDropdown || pathname.startsWith('/user/kebun_virtual');
+          } else {
+            isSelected = pathname === item.href;
+          }
+          const iconStyle = isSelected
+            ? {
+                color: '#4F6E44',
+                background: '#fff',
+                borderRadius: '50%',
+                padding: '6px',
+                boxShadow: '0 2px 8px rgba(79,110,68,0.08)',
+              }
+            : { color: '#fff' };
+          if (item.dropdown) {
+            return (
+              <button
+                key={item.label}
+                onClick={() => setShowKebunDropdown(!showKebunDropdown)}
+                className="flex flex-col items-center text-white hover:text-gray-200 transition-colors"
+              >
+                <span style={iconStyle}>{item.icon}</span>
+                <span className="text-xs mt-2 text-center">{item.label}</span>
+              </button>
+            );
+          }
+          return (
             <Link
               key={item.href}
               href={item.href!}
-              className={`flex flex-col items-center text-white hover:text-gray-200 transition-colors ${
-                pathname === item.href ? "font-bold" : ""
-              }`}
+              className="flex flex-col items-center text-white hover:text-gray-200 transition-colors"
             >
-              {item.icon}
+              <span style={iconStyle}>{item.icon}</span>
               <span className="text-xs mt-2 text-center">{item.label}</span>
             </Link>
-          )
-        ))}
+          );
+        })}
       </aside>
+
 
       {/* Dropdown kebun */}
       {showKebunDropdown && (

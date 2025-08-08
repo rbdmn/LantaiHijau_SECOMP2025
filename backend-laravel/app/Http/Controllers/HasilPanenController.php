@@ -15,23 +15,26 @@ class HasilPanenController extends Controller
     {
         try {
             $user = $request->user();
-            $hasilPanen = HasilPanen::with(['tanaman', 'penghematanPanen'])
+            $hasilPanen = HasilPanen::with(['tanaman'])
                 ->where('id_user', $user->id)
                 ->get();
 
-            // Hitung total penghematan: (harga rata-rata tanaman - harga tanam) * kuantitas (kg)
+            // Hitung total penghematan: (harga rata-rata tanaman / 1000 * kuantitas gram) - harga tanam
             $totalPenghematan = 0;
             foreach ($hasilPanen as $panen) {
                 $hargaTanam = $panen->harga_tanam ?? 0;
                 $hargaRata = optional($panen->tanaman)->rata_harga ?? 0;
                 $kuantitasGram = $panen->kuantitas_panen ?? 0;
-                $kuantitasKg = $kuantitasGram / 1000;
-                $penghematan = ($hargaRata - $hargaTanam) * $kuantitasKg;
-                $totalPenghematan += max(0, $penghematan); // Only positive savings
+                $penghematan = ($hargaRata / 1000 * $kuantitasGram) - $hargaTanam;
+                $totalPenghematan += $penghematan; // Akumulasi semua, bisa positif/negatif
             }
 
             return response()->json([
                 'data' => $hasilPanen->map(function ($item) {
+                    $hargaPasar = optional($item->tanaman)->rata_harga ?? $item->harga_pasar ?? 0;
+                    $kuantitasGram = $item->kuantitas_panen ?? 0;
+                    $hargaTanam = $item->harga_tanam ?? 0;
+                    $penghematan = ($hargaPasar / 1000 * $kuantitasGram) - $hargaTanam;
                     return [
                         'id' => $item->id,
                         'nama_tanaman' => optional($item->tanaman)->nama_tanaman,
@@ -41,8 +44,8 @@ class HasilPanenController extends Controller
                         'foto_tanaman' => optional($item->tanaman)->foto_tanaman 
                             ? url('/uploads/' . ltrim(optional($item->tanaman)->foto_tanaman, '/')) 
                             : null,
-                        'harga_pasar' => optional($item->tanaman)->rata_harga ?? $item->harga_pasar ?? 0,
-                        'penghematan' => optional($item->penghematanPanen)->jumlah_penghematan ?? 0,
+                        'harga_pasar' => $hargaPasar,
+                        'penghematan' => $penghematan,
                         'tanaman' => [
                             'rata_harga' => optional($item->tanaman)->rata_harga ?? 0
                         ]
@@ -107,31 +110,7 @@ class HasilPanenController extends Controller
             // Load tanaman relation to get harga rata
             $hasilPanen->load('tanaman');
 
-            // Hitung dan update penghematan hanya jika ada data tanaman
-            if ($hasilPanen->tanaman) {
-                $hargaRata = $hasilPanen->tanaman->rata_harga ?? 0;
-                $kuantitasKg = $validated['kuantitas_panen'] / 1000; // Convert gram to kg
-                $totalPenghematan = max(0, ($hargaRata - $validated['harga_tanam']) * $kuantitasKg);
-
-                // Update or create penghematan_panen record if the relationship exists
-                try {
-                    if (method_exists($hasilPanen, 'penghematanPanen')) {
-                        $hasilPanen->penghematanPanen()->updateOrCreate(
-                            ['id_hasil_panen' => $hasilPanen->id],
-                            [
-                                'id_tanaman' => $hasilPanen->id_tanaman,
-                                'jumlah_penghematan' => $totalPenghematan // Changed from total_penghematan
-                            ]
-                        );
-                        Log::info('Penghematan updated', ['total_penghematan' => $totalPenghematan]);
-                    }
-                } catch (Exception $e) {
-                    // Log the error but don't fail the main update
-                    Log::warning('Failed to update penghematan: ' . $e->getMessage());
-                }
-            } else {
-                Log::warning('No tanaman data found for harvest', ['harvest_id' => $hasilPanen->id]);
-            }
+            // Tidak perlu update penghematan_panen, penghematan dihitung langsung di frontend/backend
 
             Log::info('Harvest data updated successfully', [
                 'id' => $hasilPanen->id,

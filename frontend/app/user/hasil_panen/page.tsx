@@ -4,8 +4,13 @@ import { useState } from "react";
 import NavbarUtama from "../../../components/navigation/navbar_utama";
 import Sidebar from "../../../components/navigation/sidebar";
 import { useEffect } from "react";
+import { HiTrash } from "react-icons/hi2";
 
 export default function HasilPanenPage() {
+  // Toast notification state
+  const [showToast, setShowToast] = useState(false);
+  const [saveNotif, setSaveNotif] = useState("");
+  const [saveNotifType, setSaveNotifType] = useState("");
   const [panen, setPanen] = useState<any[]>([]);
   const [selectedIncomplete, setSelectedIncomplete] = useState<number[]>([]); // for incomplete items
   const [selectedComplete, setSelectedComplete] = useState<number[]>([]); // for complete items
@@ -13,6 +18,7 @@ export default function HasilPanenPage() {
   const [total, setTotal] = useState(0);
   const [kebunList, setKebunList] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
   useEffect(() => {
@@ -53,23 +59,23 @@ export default function HasilPanenPage() {
   const fetchPanen = async () => {
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (!token) return;
-    
+
+    setLoading(true); // mulai loading
+
     try {
       const res = await fetch("http://localhost:8000/api/hasil-panen", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (res.ok) {
         const result = await res.json();
-        console.log("API Response:", result); // Debug log
         const data = result.data || [];
         setTotal(result.total_penghematan || 0);
-        
+
         const panenData = data.map((item: any) => {
           const hargaPasar = item.tanaman?.rata_harga || item.harga_pasar || 0;
           const kuantitasGram = Number(item.kuantitas_panen) || 0;
           const hargaTanam = Number(item.harga_tanam) || 0;
-          
           return {
             id: item.id,
             nama: item.nama_tanaman || "Tanaman",
@@ -79,20 +85,22 @@ export default function HasilPanenPage() {
             kuantitasDisplay: kuantitasGram + " gram",
             hargaTanam: hargaTanam,
             hargaPasar: hargaPasar,
-            penghematan: (hargaPasar - hargaTanam) * (kuantitasGram / 1000),
+            penghematan: ((hargaPasar / 1000 * kuantitasGram) - hargaTanam),
             needsInput: !item.kuantitas_panen || !item.harga_tanam
           };
         });
-        
-        console.log("Processed panen data:", panenData); // Debug log
+
         setPanen(panenData);
       } else {
         console.error("Failed to fetch panen data:", res.status);
       }
     } catch (err) {
       console.error("Error fetching panen:", err);
+    } finally {
+      setLoading(false); // selesai loading
     }
   };
+
 
   useEffect(() => {
     fetchPanen();
@@ -166,7 +174,13 @@ export default function HasilPanenPage() {
       }
 
       // Remove from state and selections
-      setPanen(prev => prev.filter(item => item.id !== id));
+      setPanen(prev => {
+        const updated = prev.filter(item => item.id !== id);
+        // Recalculate total penghematan
+        const newTotal = updated.reduce((sum, item) => sum + (item.penghematan || 0), 0);
+        setTotal(newTotal);
+        return updated;
+      });
       setSelectedIncomplete(prev => prev.filter(itemId => itemId !== id));
       setSelectedComplete(prev => prev.filter(itemId => itemId !== id));
     } catch (error: any) {
@@ -197,7 +211,13 @@ export default function HasilPanenPage() {
       );
 
       // Update state
-      setPanen(prev => prev.filter(item => !selectedIncomplete.includes(item.id)));
+      setPanen(prev => {
+        const updated = prev.filter(item => !selectedIncomplete.includes(item.id));
+        // Recalculate total penghematan
+        const newTotal = updated.reduce((sum, item) => sum + (item.penghematan || 0), 0);
+        setTotal(newTotal);
+        return updated;
+      });
       setSelectedIncomplete([]);
       setForm({ nama: "", tanggal: "", kuantitas: "", hargaTanam: "" });
     } catch (error: any) {
@@ -228,7 +248,13 @@ export default function HasilPanenPage() {
       );
 
       // Update state
-      setPanen(prev => prev.filter(item => !selectedComplete.includes(item.id)));
+      setPanen(prev => {
+        const updated = prev.filter(item => !selectedComplete.includes(item.id));
+        // Recalculate total penghematan
+        const newTotal = updated.reduce((sum, item) => sum + (item.penghematan || 0), 0);
+        setTotal(newTotal);
+        return updated;
+      });
       setSelectedComplete([]);
     } catch (error: any) {
       alert('Gagal menghapus beberapa data.');
@@ -326,14 +352,16 @@ export default function HasilPanenPage() {
       // Refresh data
       await fetchPanen();
 
-      alert(`Berhasil memperbarui ${selectedIncomplete.length} item panen`);
+      setSaveNotif(`Berhasil memperbarui ${selectedIncomplete.length} item panen`);
+      setSaveNotifType('success');
+      setShowToast(true);
+      setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
     } catch (error) {
       console.error('Error updating harvest data:', error);
-      if (error instanceof Error) {
-        alert(`Gagal memperbarui data panen: ${error.message}`);
-      } else {
-        alert('Gagal memperbarui data panen: Terjadi kesalahan yang tidak diketahui.');
-      }
+      setSaveNotif(error instanceof Error ? `Gagal memperbarui data panen: ${error.message}` : 'Gagal memperbarui data panen: Terjadi kesalahan yang tidak diketahui.');
+      setSaveNotifType('error');
+      setShowToast(true);
+      setTimeout(() => { setShowToast(false); setSaveNotif(""); setSaveNotifType(""); }, 2500);
     } finally {
       setIsSubmitting(false);
     }
@@ -345,6 +373,17 @@ export default function HasilPanenPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9F6] font-sans pl-5">
+      {showToast && (
+        <div className={`fixed top-8 left-1/2 z-[9999] -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-fadeIn ${saveNotifType === 'success' ? 'bg-green-100 border border-green-400 text-green-800' : 'bg-red-100 border border-red-400 text-red-800'}`}
+          style={{ minWidth: 220, maxWidth: 340 }}>
+          {saveNotifType === 'success' ? (
+            <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+          ) : (
+            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          )}
+          <span className="font-semibold text-base">{saveNotif}</span>
+        </div>
+      )}
       <Sidebar kebunList={kebunList} />
       <NavbarUtama />
       <div className="flex">
@@ -401,12 +440,14 @@ export default function HasilPanenPage() {
               </div>
               
               <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto pr-2">
-                {incompleteItems.length === 0 ? (
-                  <div className="flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3B5D2A]"></div>
-                  </div>
-                ) : (
-                  incompleteItems.map((item) => (
+                {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3B5D2A]"></div>
+                </div>
+              ) : incompleteItems.length === 0 ? (
+                <div className="text-center text-[#3B5D2A] py-12">Anda belum memiliki data hasil panen yang perlu dilengkapi.</div>
+              ) : (
+                incompleteItems.map((item) => (
                     <div key={item.id} className="flex items-center bg-[#F8F9F6] bg-opacity-90 border border-[#B7C9A6] rounded-xl shadow p-4 relative min-h-[110px]" style={{ boxShadow: '2px 2px 4px #b7c9a6' }}>
                       <input
                         type="checkbox"
@@ -628,31 +669,42 @@ export default function HasilPanenPage() {
                         <td className="py-2 px-2 border-r border-[#B7C9A6] font-semibold align-middle">
                           Rp. {item.hargaPasar.toLocaleString("id-ID")}/Kg
                         </td>
-                        <td className="py-2 px-2 font-semibold align-middle">
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className="bg-red-600 text-white hover:bg-red-700 font-semibold px-2 py-1 rounded transition"
-                          >
-                            Hapus
-                          </button>
-                        </td>
+                        <td className="py-2 px-2 font-semibold text-center align-middle">
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="text-red-600 hover:text-red-700 transition flex items-center justify-center mx-auto"
+                          aria-label="Hapus"
+                        >
+                          <HiTrash className="w-5 h-5" />
+                        </button>
+                      </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
                 <div className="flex justify-between items-center mt-2 px-2">
-                  <span className="text-[#3B5D2A] font-semibold">Total Penghematan :</span>
-                  <span className="text-[#3B5D2A] font-bold">
-                    Rp. {Math.max(0, item.penghematan).toLocaleString("id-ID")}
-                  </span>
-                </div>
+                <span className="text-[#3B5D2A] font-semibold">Total Penghematan :</span>
+
+                <span
+                  className={`font-bold px-3 py-1 rounded 
+                    ${item.penghematan > 0 
+                      ? 'bg-green-600 text-white' 
+                      : item.penghematan < 0 
+                        ? 'bg-red-600 text-white' 
+                        : 'text-[#3B5D2A]'}`}
+                >
+                  Rp. {item.penghematan.toLocaleString("id-ID")}
+                </span>
+              </div>
               </div>
             ))}
             
-            {completeItems.length === 0 && (
-              <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3B5D2A]"></div>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3B5D2A]"></div>
               </div>
+            ) : completeItems.length === 0 && (
+              <div className="text-center text-[#3B5D2A] py-12">Anda belum memiliki data hasil panen lengkap.</div>
             )}
           </div>
         </div>
