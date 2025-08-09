@@ -12,7 +12,7 @@
 <p align="center">
   <a href="#key-features">Fitur Utama</a> •
   <a href="#how-to-use">Panduang penggunaan</a> •
-  <a href="#credits">Credits</a> •
+  <a href="#credits">Dikembangkan oleh</a> •
   <a href="#related">Related</a> •
 </p>
 
@@ -40,7 +40,7 @@ Pastikan Anda telah menginstall:
 - Node.js (versi yang mendukung Next.js)
 - Next.js v15.4.5 atau lebih
 
-Setup Backend (Laravel)
+### Setup Backend (Laravel)
 
 Buka Command Prompt atau Terminal dan Jalankan perintah berikut:
 
@@ -90,7 +90,9 @@ php artisan key:generate
 php artisan serve
 ```
 
-Setup Frontend (Next.js)
+### Setup Frontend (Next.js)
+
+Buka Command Prompt atau Terminal dan Jalankan perintah berikut:
 
 ```bash
 # Masuk ke folder frontend Next.js:
@@ -98,9 +100,6 @@ cd frontend
 
 # Install dependencies:
 npm install
-
-# Sesuaikan file .env.local (jika ada) untuk API URL:
-NEXT_PUBLIC_API_URL=http://localhost:8000
 
 # Jalankan development server:
 npm run dev
@@ -112,19 +111,13 @@ Akses Website
 - phpMyAdmin: http://localhost/phpmyadmin
 
 > **Note**
-> If you're using Linux Bash for Windows, [see this guide](https://www.howtogeek.com/261575/how-to-run-graphical-linux-desktop-applications-from-windows-10s-bash-shell/) or use `node` from the command prompt.
+> Jangan lupa menyalakan server MySQL di XAMPP ataupun web server lokal lainnya
 
-## Credits
-
-This software uses the following open source packages:
-
-- [Electron](http://electron.atom.io/)
-- [Node.js](https://nodejs.org/)
-- [Marked - a markdown parser](https://github.com/chjj/marked)
-- [showdown](http://showdownjs.github.io/showdown/)
-- [CodeMirror](http://codemirror.net/)
-- Emojis are taken from [here](https://github.com/arvida/emoji-cheat-sheet.com)
-- [highlight.js](https://highlightjs.org/)
+## Dikembangkan oleh
+Dibuatkan oleh tim Nolsatu
+- Abdurrahman Rauf Budiman
+- Marco Henrik Abineno
+- Faiz Bayu Erlangga
 
 ## Related
 
