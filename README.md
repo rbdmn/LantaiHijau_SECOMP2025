@@ -9,13 +9,6 @@
 
 <h4 align="center">Smart Planner Interaktif untuk Merancang, Merawat, dan Mencatat Hasil Panen Tanaman Pangan Indoor</h4>
 
-<p align="center">
-  <a href="#key-features">Fitur Utama</a> •
-  <a href="#how-to-use">Panduang penggunaan</a> •
-  <a href="#credits">Dikembangkan oleh</a> •
-  <a href="#related">Related</a> •
-</p>
-
 <img src="https://github.com/user-attachments/assets/1207a9d9-dce2-4df1-8aa5-c7b255a4b83b" height="1050" width="1050" />
 
 ## Fitur utama
@@ -118,7 +111,3 @@ Dibuatkan oleh tim Nolsatu
 - Abdurrahman Rauf Budiman
 - Marco Henrik Abineno
 - Faiz Bayu Erlangga
-
-## Related
-
-[Try Web version of Markdownify](https://notepad.js.org/markdown-editor/)
