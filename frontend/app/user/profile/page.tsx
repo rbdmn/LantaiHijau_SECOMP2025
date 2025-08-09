@@ -123,6 +123,7 @@ export default function ProfilePage() {
               type="email"
               name="email"
               value={form.email}
+              readOnly
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#5C7D5B] focus:border-transparent"
               placeholder="Email"
@@ -132,6 +133,7 @@ export default function ProfilePage() {
               type="text"
               name="username"
               value={form.username}
+              readOnly
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#5C7D5B] focus:border-transparent"
               placeholder="Username"
@@ -141,6 +143,7 @@ export default function ProfilePage() {
               type="password"
               name="password"
               value={form.password}
+              readOnly
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-[#5C7D5B] focus:border-transparent"
               placeholder="********************"
